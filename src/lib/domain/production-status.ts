@@ -8,6 +8,17 @@ export type ProductionStatus =
   | 'completed'
   | 'cancelled'
 
+export const PRODUCTION_STATUS_VALUES: ProductionStatus[] = [
+  'received',
+  'queued',
+  'in_batch',
+  'inspected',
+  'ready_to_ship',
+  'shipped',
+  'completed',
+  'cancelled',
+]
+
 // screen_design.md §5「状態表示の統一」準拠
 export const PRODUCTION_STATUS_LABELS_ADMIN: Record<ProductionStatus, string> = {
   received: '受付/キュー待ち',
