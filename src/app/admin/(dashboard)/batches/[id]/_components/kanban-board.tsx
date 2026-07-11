@@ -109,16 +109,26 @@ export function KanbanBoard({ batch, items, steps }: { batch: Batch; items: Batc
             {batch.is_custom && ' ・ オーダーメイド'}
           </p>
         </div>
-        {advanceLabel && (
-          <button
-            type="button"
-            disabled={isPending || (isAtInspection && !allChecked)}
-            onClick={() => setConfirmOpen(true)}
-            className="h-14 rounded-md bg-gray-900 px-6 text-base font-medium text-white disabled:opacity-40"
+        <div className="flex items-center gap-3">
+          <a
+            href={`/admin/batches/${batch.id}/worksheet`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-11 items-center rounded-md border border-gray-300 px-4 text-sm font-medium text-gray-700"
           >
-            {advanceLabel}
-          </button>
-        )}
+            製作指示書
+          </a>
+          {advanceLabel && (
+            <button
+              type="button"
+              disabled={isPending || (isAtInspection && !allChecked)}
+              onClick={() => setConfirmOpen(true)}
+              className="h-14 rounded-md bg-gray-900 px-6 text-base font-medium text-white disabled:opacity-40"
+            >
+              {advanceLabel}
+            </button>
+          )}
+        </div>
       </div>
 
       {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
