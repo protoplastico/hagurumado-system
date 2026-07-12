@@ -1,8 +1,11 @@
 import Anthropic from '@anthropic-ai/sdk'
 import type { EmailDraftInput, EmailDraft } from './types'
 
-// TASK-12指示書は「claude-sonnet-4-6」を指定していたが実在しないモデルIDだったため、
-// 現行の最新モデルに置き換え(要確認・報告済み。ユーザー承認によりclaude-sonnet-5を採用)。
+// TASK-12指示書は「claude-sonnet-4-6」を指定していたが、当時実在しないモデルIDと判断し
+// claude-sonnet-5に置き換えた(要確認・報告済み。ユーザー承認済み)。
+// TASK-16のレビューでclaude-sonnet-4-6への差し戻しが指摘されたため再調査したところ、
+// claude-sonnet-4-6は実在するが1世代前のモデルであり、同一料金帯のclaude-sonnet-5への
+// 移行が公式に推奨されていることを確認。ユーザー承認によりclaude-sonnet-5を維持する。
 const MODEL = 'claude-sonnet-5'
 
 const TONE_GUIDE = `葉車堂細工所は木製ペングリップを一本ずつ手作業で仕上げる工房です。

@@ -18,6 +18,11 @@ const FIELD_LABELS: Record<string, string> = {
   wait_estimate_safety_margin: '推定待ち週数の安全マージン(倍率)',
 }
 
+const FIELD_HINTS: Record<string, string> = {
+  weekly_throughput_override:
+    '稼働初期(製作実績が4週分溜まるまで)はこの値が使われます。実績が溜まったら空欄に戻し、実績算出に切り替えてください。',
+}
+
 function labelFor(row: SettingRow): string {
   return FIELD_LABELS[row.key] ?? row.key
 }
@@ -54,7 +59,13 @@ export function SettingsEditor({ rows }: { rows: SettingRow[] }) {
       <section className="space-y-4 rounded-lg border border-gray-200 bg-white p-4">
         <h2 className="text-lg font-semibold text-gray-900">パラメータ</h2>
         {paramRows.map((row) => (
-          <NumberField key={row.key} settingKey={row.key} label={labelFor(row)} value={row.value} />
+          <NumberField
+            key={row.key}
+            settingKey={row.key}
+            label={labelFor(row)}
+            value={row.value}
+            hint={FIELD_HINTS[row.key]}
+          />
         ))}
       </section>
     </div>
@@ -108,7 +119,17 @@ function BooleanField({
   )
 }
 
-function NumberField({ settingKey, label, value }: { settingKey: string; label: string; value: unknown }) {
+function NumberField({
+  settingKey,
+  label,
+  value,
+  hint,
+}: {
+  settingKey: string
+  label: string
+  value: unknown
+  hint?: string
+}) {
   const isNumeric = typeof value === 'number'
   const [text, setText] = useState(isNumeric ? String(value) : '')
   const [isPending, startTransition] = useTransition()
@@ -129,9 +150,12 @@ function NumberField({ settingKey, label, value }: { settingKey: string; label: 
 
   return (
     <div className="flex items-center justify-between gap-4">
-      <label className="text-sm font-medium text-gray-900" htmlFor={settingKey}>
-        {label}
-      </label>
+      <div>
+        <label className="text-sm font-medium text-gray-900" htmlFor={settingKey}>
+          {label}
+        </label>
+        {hint && <p className="mt-0.5 text-xs text-gray-500">{hint}</p>}
+      </div>
       <div className="flex shrink-0 items-center gap-2">
         <input
           id={settingKey}

@@ -45,10 +45,13 @@ export default async function ShippingPoolPage() {
       byOrder.set(item.order_id, entry)
     }
 
+    // 決済ステータスがpaidでない注文(cancelled/refunded/pending)は発送対象外。
+    // orderInfoByIdに載らないことでready/partial両方のプールから除外される。
     const { data: orderRows, error: ordersError } = await supabase
       .from('orders')
       .select('id, order_number, region, customers(name, email)')
       .in('id', candidateOrderIds)
+      .eq('payment_status', 'paid')
     if (ordersError) throw ordersError
 
     const orderInfoById = new Map(
