@@ -1,15 +1,9 @@
 import { t, type Locale } from '@/lib/i18n'
 import type { OrderAcceptanceStatus } from '@/lib/domain/store-status'
+import { WaitWeeksNotice } from './wait-weeks-notice'
 
 export function OrderStatusBanner({ locale, status }: { locale: Locale; status: OrderAcceptanceStatus }) {
   const dict = t(locale)
-
-  const waitWeeksText =
-    status.estimatedWaitWeeks != null
-      ? [dict.status.waitWeeksPrefix, Math.ceil(status.estimatedWaitWeeks), dict.status.waitWeeksSuffix].join(
-          locale === 'ja' ? '' : ' '
-        )
-      : dict.status.waitWeeksUnknown
 
   return (
     <div
@@ -22,7 +16,7 @@ export function OrderStatusBanner({ locale, status }: { locale: Locale; status: 
       <p className="font-medium">
         {status.acceptingOrders ? dict.status.acceptingTrue : dict.status.acceptingFalse}
       </p>
-      <p className="mt-0.5 text-xs opacity-80">{waitWeeksText}</p>
+      <WaitWeeksNotice locale={locale} estimatedWaitWeeks={status.estimatedWaitWeeks} className="mt-0.5 text-xs opacity-80" />
     </div>
   )
 }

@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { isLocale, t, type Locale } from '@/lib/i18n'
 import { useCart } from '@/lib/store/cart'
-import { getEstimatedWaitWeeksForComplete } from '../actions'
+import { WaitWeeksNotice } from '../../_components/wait-weeks-notice'
+import { getEstimatedWaitWeeks } from '../actions'
 
 export default function CheckoutCompletePage({
   params,
@@ -30,7 +31,7 @@ export default function CheckoutCompletePage({
   }, [clearCart])
 
   useEffect(() => {
-    getEstimatedWaitWeeksForComplete()
+    getEstimatedWaitWeeks()
       .then(setWaitWeeks)
       .finally(() => setLoading(false))
   }, [])
@@ -45,13 +46,7 @@ export default function CheckoutCompletePage({
         </p>
       )}
 
-      <p className="mb-2 text-sm text-sumi/80">
-        {!loading && waitWeeks != null
-          ? `${dict.checkoutComplete.waitWeeksPrefix} ${Math.ceil(waitWeeks)} ${dict.checkoutComplete.waitWeeksSuffix}`
-          : !loading
-            ? dict.checkoutComplete.waitWeeksUnknown
-            : ''}
-      </p>
+      {!loading && <WaitWeeksNotice locale={locale} estimatedWaitWeeks={waitWeeks} className="mb-2 text-sm text-sumi/80" />}
 
       <p className="mb-8 text-sm text-sumi/60">{dict.checkoutComplete.emailNotice}</p>
 

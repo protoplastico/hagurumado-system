@@ -120,8 +120,8 @@ export async function getShippingFeePreview(locale: Locale, country: string | nu
   return getInternationalShippingFee(supabase, country)
 }
 
-// S-06注文完了ページの推定待ち週数表示用(estimated_wait_weeksはanonに公開済み)
-export async function getEstimatedWaitWeeksForComplete(): Promise<number | null> {
+// S-05/S-06の推定待ち週数表示用(estimated_wait_weeksはanonに公開済み。TASK-24でS-05にも共通表示)
+export async function getEstimatedWaitWeeks(): Promise<number | null> {
   const supabase = createClient()
   const { data, error } = await supabase.from('estimated_wait_weeks').select('estimated_wait_weeks').single()
   if (error) throw error

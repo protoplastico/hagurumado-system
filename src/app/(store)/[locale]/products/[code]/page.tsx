@@ -6,6 +6,7 @@ import { getOrderAcceptanceStatus } from '@/lib/domain/store-status'
 import { getProductImageUrl } from '@/lib/domain/product-image'
 import { formatPrice, getPriceForLocale } from '@/lib/domain/pricing'
 import { ProductImage } from '../../_components/product-image'
+import { WaitWeeksNotice } from '../../_components/wait-weeks-notice'
 import { CustomizeStepper } from './_components/customize-stepper'
 import { CustomOrderNotice } from './_components/custom-order-notice'
 
@@ -42,6 +43,7 @@ export default async function ProductDetailPage({ params }: { params: { locale: 
           <h1 className="text-xl font-semibold text-sumi">{name}</h1>
           {woodSpecies && <p className="mt-1 text-sm text-sumi/60">{woodSpecies}</p>}
           <p className="mt-3 text-lg text-accent">{formatPrice(getPriceForLocale(product, locale), locale)}</p>
+          <WaitWeeksNotice locale={locale} estimatedWaitWeeks={status.estimatedWaitWeeks} className="mt-2 text-xs text-sumi/60" />
         </div>
       </div>
 

@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { isLocale, t, type Locale } from '@/lib/i18n'
 import { getFilteredProducts } from '@/lib/domain/store-products'
+import { getOrderAcceptanceStatus } from '@/lib/domain/store-status'
+import { WaitWeeksNotice } from '../_components/wait-weeks-notice'
 import { ProductFilters } from './_components/product-filters'
 import { ProductCard } from './_components/product-card'
 
@@ -36,17 +38,21 @@ export default async function ProductListPage({
   const minPrice = minPriceRaw ? Number(minPriceRaw) : undefined
   const maxPrice = maxPriceRaw ? Number(maxPriceRaw) : undefined
 
-  const products = await getFilteredProducts(supabase, {
-    maker: maker || undefined,
-    series: series || undefined,
-    minPrice: minPrice != null && !Number.isNaN(minPrice) ? minPrice : undefined,
-    maxPrice: maxPrice != null && !Number.isNaN(maxPrice) ? maxPrice : undefined,
-    locale,
-  })
+  const [products, status] = await Promise.all([
+    getFilteredProducts(supabase, {
+      maker: maker || undefined,
+      series: series || undefined,
+      minPrice: minPrice != null && !Number.isNaN(minPrice) ? minPrice : undefined,
+      maxPrice: maxPrice != null && !Number.isNaN(maxPrice) ? maxPrice : undefined,
+      locale,
+    }),
+    getOrderAcceptanceStatus(supabase),
+  ])
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
-      <h1 className="mb-6 text-xl font-semibold text-sumi">{dict.productList.heading}</h1>
+      <h1 className="mb-1 text-xl font-semibold text-sumi">{dict.productList.heading}</h1>
+      <WaitWeeksNotice locale={locale} estimatedWaitWeeks={status.estimatedWaitWeeks} className="mb-6 text-xs text-sumi/60" />
 
       <ProductFilters
         locale={locale}
