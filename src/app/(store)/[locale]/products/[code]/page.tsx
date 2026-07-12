@@ -9,6 +9,8 @@ import { ProductImage } from '../../_components/product-image'
 import { WaitWeeksNotice } from '../../_components/wait-weeks-notice'
 import { CustomizeStepper } from './_components/customize-stepper'
 import { CustomOrderNotice } from './_components/custom-order-notice'
+import { ProductStory } from './_components/product-story'
+import { getProductContent } from '@/lib/sanity/queries'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,9 +26,12 @@ export default async function ProductDetailPage({ params }: { params: { locale: 
   const locale: Locale = isLocale(params.locale) ? params.locale : 'ja'
   const supabase = createClient()
 
-  const [product, status] = await Promise.all([
+  const [product, status, productContent] = await Promise.all([
     getProductDetail(supabase, params.code),
     getOrderAcceptanceStatus(supabase),
+    // TASK-25: Sanity側は商品詳細のストーリー・追加ギャラリー専用の補足コンテンツであり、
+    // 未設定・取得失敗でも本編(Supabase側の商品情報・カスタマイズ)の表示は妨げない。
+    getProductContent(params.code).catch(() => null),
   ])
 
   if (!product) notFound()
@@ -54,6 +59,8 @@ export default async function ProductDetailPage({ params }: { params: { locale: 
           <CustomizeStepper locale={locale} product={product} acceptingOrdersGlobal={status.acceptingOrders} />
         )}
       </div>
+
+      {productContent && <ProductStory locale={locale} content={productContent} />}
     </div>
   )
 }

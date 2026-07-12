@@ -36,6 +36,29 @@ SUPABASE_SERVICE_ROLE_KEY=<service_role key>
 ## 5. TASK-09の前に必要な作業
 BASE管理画面 > 注文/顧客 からCSVをエクスポートし、カラム構成をClaude Codeに提示すること(個人情報行は取込作業時のみ使用。リポジトリにコミットしない)。
 
+## 6. TASK-25の前に必要な作業(Sanity)
+1. https://sanity.io/manage でアカウント作成・プロジェクト作成(無料プランで可)
+2. プロジェクトのProject IDを控える
+3. データセットは`production`という名前で作成(新規プロジェクトなら自動作成されていることが多い)
+4. プロジェクト設定 > API > Tokens で「Viewer」権限のAPIトークンを発行して控える(再表示不可)
+5. 以下を`.env.local`(リポジトリ直下、Next.js用)に設定:
+   ```
+   SANITY_PROJECT_ID=<Project ID>
+   SANITY_DATASET=production
+   SANITY_API_READ_TOKEN=<発行したトークン>
+   SANITY_REVALIDATE_SECRET=<任意の推測困難な文字列。SanityのWebhook設定時にも同じ値を使う>
+   ```
+6. Sanity Studio(`studio/`ディレクトリ)を起動する場合は、`studio/.env.local`に以下を設定:
+   ```
+   SANITY_STUDIO_PROJECT_ID=<Project ID>
+   SANITY_STUDIO_DATASET=production
+   ```
+   (`cd studio && npm install && npm run dev` でローカル起動。既定ポート3333)
+7. Webhook設定(コンテンツ編集をフロントへ即時反映させたい場合、TASK-30のステージング公開後に設定):
+   Sanity管理画面 > API > Webhooks で `<デプロイ先URL>/api/webhooks/sanity` 宛にPOSTするWebhookを作成し、
+   Secretに上記`SANITY_REVALIDATE_SECRET`と同じ値を設定。投影(Projection)は
+   `{"_type": _type, "slug": slug.current, "productCode": productCode}` とすること。
+
 ## 進行管理
 - 各TASK完了ごとにコミットが積まれる。動作確認して次へ
 - 設計変更が必要になった場合はこのチャット(Fable)に戻して判断

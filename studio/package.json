@@ -1,0 +1,28 @@
+{
+  "name": "hagurumado-studio",
+  "private": true,
+  "version": "1.0.0",
+  "description": "葉車堂細工所 Sanity Studio(コンテンツ管理)",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sanity/locale-ja-jp": "^1.1.36",
+    "@sanity/vision": "^6.4.0",
+    "react": "^19.2.2",
+    "react-dom": "^19.2.2",
+    "sanity": "^6.4.0",
+    "styled-components": "^6.1.15"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5"
+  }
+}

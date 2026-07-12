@@ -12,9 +12,13 @@ const nextConfig = {
     serverActionsBodySizeLimit: '10mb',
   },
   images: {
-    remotePatterns: supabaseHostname
-      ? [{ protocol: 'https', hostname: supabaseHostname, pathname: '/storage/v1/object/public/**' }]
-      : [],
+    remotePatterns: [
+      ...(supabaseHostname
+        ? [{ protocol: 'https', hostname: supabaseHostname, pathname: '/storage/v1/object/public/**' }]
+        : []),
+      // TASK-25: Sanity CDN(商品ストーリー・ガイド・ブログの画像)
+      { protocol: 'https', hostname: 'cdn.sanity.io', pathname: '/images/**' },
+    ],
   },
 };
 
