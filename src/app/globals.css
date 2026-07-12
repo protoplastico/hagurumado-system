@@ -7,12 +7,12 @@
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/*
+ * 管理画面(/admin)はダークモード対応(dark:バリアント)を実装していないため、
+ * OS/ブラウザの配色設定に関わらず常にライトモード固定にする。
+ * prefers-color-schemeで自動切替すると、背景色だけダークになり文字色が
+ * ライト用のまま(あるいはその逆)になってコントラストが崩れるため。
+ */
 
 body {
   color: var(--foreground);
