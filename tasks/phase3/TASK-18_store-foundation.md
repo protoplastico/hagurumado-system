@@ -12,6 +12,23 @@
 5. 価格・regionコンテキスト:locale=ja→domestic価格、locale=en→international価格を返す共通関数 `getPriceForLocale()`
 
 ## 受入条件
-- [ ] /ja /en が表示され言語切替が機能する
-- [ ] 受注休止中(settingsをfalseに)でバナーが切り替わる
-- [ ] is_active=falseの商品・variationがフロントに出ない(RLS/クエリ両方で担保)
+- [x] /ja /en が表示され言語切替が機能する
+- [x] 受注休止中(settingsをfalseに)でバナーが切り替わる
+- [x] is_active=falseの商品・variationがフロントに出ない(RLS/クエリ両方で担保)
+
+## 実施結果メモ
+
+- settingsテーブルはRLS有効・anon向けポリシー無しだったため、受注状態バナーが
+  accepting_orders_globalを読めなかった。新マイグレーション
+  `20260712000020_public_accepting_orders_setting.sql` で当該キーのみanon読取を許可
+  (他の内部設定キーは非公開のまま)。estimated_wait_weeksビューは既存マイグレーションで
+  anon公開済みだった。
+- ブランドステートメントは確定事項#5「和の美意識×天然素材×リデザイン」の文言を基に
+  日英それぞれ短い一文へ展開(要件定義書に長文の確定コピーは無いため)。
+- ヘッダーのSNS導線は実アカウントURLが未提供のため未実装(コード内にコメントで明記)。
+- ローカルPostgresでRLS検証:anonはaccepting_orders_globalのみ読める(他キーは0件)、
+  estimated_wait_weeksを読める、is_active=trueの商品・variationのみ見える、を確認。
+- middlewareの `/` → Accept-Language判定リダイレクト、不正locale(例:/fr)の404、
+  既存の/admin保護(無変更)をdevサーバーで実機確認。
+- 商品一覧(S-02)自体はTASK-19のスコープのため、トップページには「導線」として
+  商品ラインナップの簡易プレビュー(最大6件、is_active=trueのみ)とCTAリンクのみ実装した。
