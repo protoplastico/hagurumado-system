@@ -21,3 +21,6 @@ insert into settings (key, value, description) values
   ('weekly_throughput_override', 'null', '週間スループットの手動上書き(通常は実績算出)'),
   ('accepting_orders_global', 'true', '全体受注フラグ'),
   ('wait_estimate_safety_margin', '1.2', '推定待ち週数の安全マージン(乗数、樹種バッチ待ち考慮)');
+
+-- auto_send_*(メール種別ごとの自動送信設定)は
+-- supabase/migrations/20260712000015_auto_send_settings.sqlで投入する(重複を避けるためここでは扱わない)。
