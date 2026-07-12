@@ -6,8 +6,16 @@ import { isLocale, t, type Locale } from '@/lib/i18n'
 import { formatPrice } from '@/lib/domain/pricing'
 import { CHECKOUT_COUNTRY_OPTIONS } from '@/lib/domain/checkout-countries'
 import { useCart } from '@/lib/store/cart'
+import { WaitWeeksNotice } from '../_components/wait-weeks-notice'
+import { getMyDefaultShippingInfo } from '../account/actions'
 import { recalculateCart, type CartRecalcResult } from '../cart/actions'
-import { createCheckoutSession, createPayPalOrder, getShippingFeePreview, type CheckoutItemInput } from './actions'
+import {
+  createCheckoutSession,
+  createPayPalOrder,
+  getEstimatedWaitWeeks,
+  getShippingFeePreview,
+  type CheckoutItemInput,
+} from './actions'
 
 type PaymentMethod = 'stripe' | 'paypal'
 
@@ -57,6 +65,29 @@ export default function CheckoutPage({
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [waitWeeks, setWaitWeeks] = useState<number | null>(null)
+
+  useEffect(() => {
+    getEstimatedWaitWeeks().then(setWaitWeeks)
+  }, [])
+
+  // TASK-23 item6: ログイン済であれば会員情報から配送先を自動入力する(未入力の項目のみ埋める)
+  useEffect(() => {
+    getMyDefaultShippingInfo().then((info) => {
+      if (!info) return
+      setShipping((prev) => ({
+        ...prev,
+        email: prev.email || info.email,
+        name: prev.name || info.name || '',
+        phone: prev.phone || info.phone || '',
+        postalCode: prev.postalCode || info.postalCode || '',
+        address1: prev.address1 || info.address1 || '',
+        address2: prev.address2 || info.address2 || '',
+        country: prev.country || (locale === 'en' ? info.country ?? '' : prev.country),
+      }))
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const recalcKey = useMemo(
     () => JSON.stringify(items.map((i) => ({ id: i.id, q: i.quantity, o: i.options.map((o) => o.valueId) }))),
@@ -194,7 +225,8 @@ export default function CheckoutPage({
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="mb-6 text-xl font-semibold text-sumi">{dict.checkout.heading}</h1>
+      <h1 className="mb-1 text-xl font-semibold text-sumi">{dict.checkout.heading}</h1>
+      <WaitWeeksNotice locale={locale} estimatedWaitWeeks={waitWeeks} className="mb-6 text-xs text-sumi/60" />
 
       {searchParams.cancelled === '1' && (
         <p className="mb-6 border border-amber-800/20 bg-amber-800/5 px-3 py-2 text-xs text-amber-800">

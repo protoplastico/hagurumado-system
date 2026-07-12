@@ -1,10 +1,17 @@
 import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
+import { createClient } from '@/lib/supabase/server'
 import { LocaleSwitcher } from './locale-switcher'
 import { CartBadge } from './cart-badge'
+import { LogoutButton } from '../account/_components/logout-button'
 
-export function StoreHeader({ locale }: { locale: Locale }) {
+// TASK-23: ログイン状態に応じて「ログイン」⇔「マイページ/ログアウト」を出し分ける。
+export async function StoreHeader({ locale }: { locale: Locale }) {
   const dict = t(locale)
+  const supabase = createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   return (
     <header className="border-b border-sumi/10 bg-kinari">
@@ -24,9 +31,18 @@ export function StoreHeader({ locale }: { locale: Locale }) {
             <CartIcon />
             <CartBadge />
           </Link>
-          <Link href={`/${locale}/account/login`} className="hover:text-accent">
-            {dict.common.login}
-          </Link>
+          {user ? (
+            <>
+              <Link href={`/${locale}/account`} className="hover:text-accent">
+                {dict.common.myPage}
+              </Link>
+              <LogoutButton locale={locale} label={dict.common.logout} />
+            </>
+          ) : (
+            <Link href={`/${locale}/account/login`} className="hover:text-accent">
+              {dict.common.login}
+            </Link>
+          )}
           <LocaleSwitcher locale={locale} label={dict.common.switchLanguage} />
         </nav>
       </div>
