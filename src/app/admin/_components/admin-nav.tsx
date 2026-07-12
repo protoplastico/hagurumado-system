@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: '/admin/customers', label: '顧客' },
   { href: '/admin/emails', label: 'メール' },
   { href: '/admin/products', label: '商品' },
+  { href: '/admin/base-import', label: 'BASEインポート' },
   { href: '/admin/settings', label: '設定' },
 ]
 
