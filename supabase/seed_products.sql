@@ -4,6 +4,8 @@
 --   products/option_groups は code UNIQUE + on conflict do nothing で二重投入防止済み。
 --   product_option_groups は主キー(product_id, option_group_id) + on conflict do nothing で防止済み。
 --   variations/option_values には一意制約が無いため、再実行すると重複投入される。
+--   本ファイルの後、続けて supabase/seed_variations_full.sql を実行すること
+--   (LITE/ERGO/WAZAI/PRO/PREMIUM33商品の完全なバリエーション一覧を投入する)。
 --
 -- データソース:
 --   1. docs/base_structure_research.md §3(商品・価格一覧)/§4(オプション構造)
@@ -73,20 +75,10 @@ insert into products (code, series, name_ja, name_en, wood_species_ja, wood_spec
 on conflict (code) do nothing;
 
 -- variations(対応ペン機種)
--- 一次ソースとすべき「BASE商品CSVエクスポート」は提供されなかった(提供されたのは注文CSV)。
--- そのため、注文CSV実データで確認できたLITE 2商品のみ実際のバリエーションを投入し、
--- それ以外の商品(ERGO/WAZAI/PRO/PREMIUM)はTASK-17指示書の規定どおり無投入とする。
--- 残りは商品ページ確認のうえ管理画面A-14から追加すること。
--- ※実データでは「ACP50000DZ」の商品名違いが2件見られたが、型番が同一のため同一機種として1件に統合した。
-insert into variations (product_id, name_ja, name_en, maker, model_code, sort_order)
-select id, v.name_ja, v.name_en, v.maker, v.model_code, v.sort_order
-from products p
-cross join lateral (values
-  ('【Wacom】Pro Pen3(軸の中におもり/替芯)', 'Wacom Pro Pen 3', 'WACOM'::pen_maker, 'ACP50000DZ', 1),
-  ('【Wacom】Pro Pen2', 'Wacom Pro Pen 2', 'WACOM'::pen_maker, 'KP-504E', 2),
-  ('【XP-PEN】P05/P05S/P05R', 'XP-Pen P05 / P05S / P05R', 'XPPEN'::pen_maker, 'P05', 3)
-) as v(name_ja, name_en, maker, model_code, sort_order)
-where p.code in ('lite-white', 'lite-brown');
+-- LITE/ERGO/WAZAI/PRO/PREMIUM(33商品)の完全なバリエーション一覧は、実際のBASE商品CSVエクスポート
+-- (2026-07-12提供、523件)に基づく supabase/seed_variations_full.sql で投入する
+-- (本ファイル適用後に続けて実行すること)。ここでは同ファイルの対象外である
+-- Apple Pencil用2商品分のみ投入する。
 
 -- Apple Pencil用商品は機種選択をオプショングループ(Apple Pencil機種)側で行うため、
 -- variationsには対応デバイス名そのものを1件のみ登録する。

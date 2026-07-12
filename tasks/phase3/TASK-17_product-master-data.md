@@ -51,7 +51,18 @@
 
 ### 未確定・要フォローアップ
 - 海外価格:全36商品でis_active=false。実際の英語BASE価格を確認後、A-14からis_active=trueに変更すること
-- variations:LITE 2商品以外(34商品)は未投入。商品ページ確認のうえA-14から追加すること
+- ~~variations:LITE 2商品以外(34商品)は未投入。~~ → 追記(2026-07-12)参照。ERGO/WAZAI/PRO/PREMIUM 33商品分は投入済み
 - インク染め(24件)/製品仕様Apple Pencil(14件):グループのみ作成、選択肢は未投入。A-14から追加すること
 - ERGO/WAZAI/PRO/PREMIUMの商品名(name_ja/en):実際のBASE商品ページの正式タイトルではなく、
   調査結果のシリーズ名+樹種名から構成した表示名。A-14で最終確認・調整すること
+
+### 追記(2026-07-12):variations完全版の投入
+
+ユーザーより実際のBASE商品情報CSVエクスポート(35商品523バリエーション)が提供されたため、
+`supabase/seed_variations_full.sql`を新規作成し、上記フォローアップ項目の一つ(variations未投入問題)を解消した。
+
+- 対象:LITE/ERGO/WAZAI/PRO/PREMIUMの33商品(custom-order-feeとApple Pencil 2商品を除く)。全商品で1件以上のバリエーションを確認(ローカルPostgresで検証済み)
+- 適用順序:`seed.sql` → `seed_products.sql` → `seed_variations_full.sql`(この順で1回のみ実行)
+- 冪等性:一時テーブル経由で対象商品分のvariationsのみを削除してから再投入するため、再実行しても重複しない(Apple Pencil分は対象外のため一切変更されない)
+- **データ品質上の修正**:アップロードされた元データにはApple Pencil用2商品(applepencil-cork-lite/applepencil-wood-pro)分の行も含まれていたが、name_ja/name_enが空文字・makerが誤り('OTHER'、正しくは'APPLE')だったため、この2商品分は投入対象から除外した。`seed_products.sql`が既に投入している意味のある値(name='Apple Pencil', maker='APPLE')を維持している
+- 未確定・要フォローアップは引き続き有効:海外価格・インク染め/製品仕様選択肢・ERGO/WAZAI/PRO/PREMIUM商品名の正式タイトル確認
