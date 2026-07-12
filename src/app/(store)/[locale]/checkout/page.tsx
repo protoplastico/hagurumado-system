@@ -7,7 +7,9 @@ import { formatPrice } from '@/lib/domain/pricing'
 import { CHECKOUT_COUNTRY_OPTIONS } from '@/lib/domain/checkout-countries'
 import { useCart } from '@/lib/store/cart'
 import { recalculateCart, type CartRecalcResult } from '../cart/actions'
-import { createCheckoutSession, getShippingFeePreview, type CheckoutItemInput } from './actions'
+import { createCheckoutSession, createPayPalOrder, getShippingFeePreview, type CheckoutItemInput } from './actions'
+
+type PaymentMethod = 'stripe' | 'paypal'
 
 type ShippingFormState = {
   name: string
@@ -49,6 +51,7 @@ export default function CheckoutPage({
   const [recalcById, setRecalcById] = useState<Record<string, CartRecalcResult>>({})
   const [loadingRecalc, setLoadingRecalc] = useState(true)
   const [shipping, setShipping] = useState<ShippingFormState>(() => initialShippingState(locale))
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('stripe')
   const [shippingFee, setShippingFee] = useState<number | null>(null)
   const [loadingFee, setLoadingFee] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -136,30 +139,37 @@ export default function CheckoutPage({
         quantity: item.quantity,
       }))
 
-      const result = await createCheckoutSession({
-        locale,
-        origin: window.location.origin,
-        items: checkoutItems,
-        shipping: {
-          name: shipping.name.trim(),
-          email: shipping.email.trim(),
-          phone: shipping.phone.trim(),
-          postalCode: shipping.postalCode.trim(),
-          address1: shipping.address1.trim(),
-          address2: shipping.address2.trim(),
-          country: locale === 'ja' ? 'JP' : shipping.country,
-          customerMessage: shipping.customerMessage,
-          desiredDeliveryDate: shipping.desiredDeliveryDate || null,
-        },
-      })
-
-      if (!result.ok) {
-        setSubmitError(result.error)
-        setSubmitting(false)
-        return
+      const shippingInput = {
+        name: shipping.name.trim(),
+        email: shipping.email.trim(),
+        phone: shipping.phone.trim(),
+        postalCode: shipping.postalCode.trim(),
+        address1: shipping.address1.trim(),
+        address2: shipping.address2.trim(),
+        country: locale === 'ja' ? 'JP' : shipping.country,
+        customerMessage: shipping.customerMessage,
+        desiredDeliveryDate: shipping.desiredDeliveryDate || null,
       }
 
-      window.location.href = result.url
+      // TASK-22: 注文作成ロジック(価格再検証・スナップショット保存)はcreatePendingOrder経由で
+      // Stripe/PayPal共通。ここでは決済手段ごとにリダイレクト先を出し分けるだけ。
+      if (paymentMethod === 'stripe') {
+        const result = await createCheckoutSession({ locale, origin: window.location.origin, items: checkoutItems, shipping: shippingInput })
+        if (!result.ok) {
+          setSubmitError(result.error)
+          setSubmitting(false)
+          return
+        }
+        window.location.href = result.url
+      } else {
+        const result = await createPayPalOrder({ locale, origin: window.location.origin, items: checkoutItems, shipping: shippingInput })
+        if (!result.ok) {
+          setSubmitError(result.error)
+          setSubmitting(false)
+          return
+        }
+        window.location.href = result.approveUrl
+      }
     } catch {
       setSubmitError(dict.checkout.cancelledNotice)
       setSubmitting(false)
@@ -287,6 +297,30 @@ export default function CheckoutPage({
                 className="w-full border border-sumi/20 bg-white px-3 py-2 text-sm text-sumi"
               />
             </Field>
+          </div>
+        </section>
+
+        <section className="border-t border-sumi/10 pt-4">
+          <h2 className="mb-3 text-sm font-semibold text-sumi">{dict.checkout.paymentMethodLabel}</h2>
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm text-sumi">
+              <input
+                type="radio"
+                name="paymentMethod"
+                checked={paymentMethod === 'stripe'}
+                onChange={() => setPaymentMethod('stripe')}
+              />
+              {dict.checkout.paymentMethodStripe}
+            </label>
+            <label className="flex items-center gap-2 text-sm text-sumi">
+              <input
+                type="radio"
+                name="paymentMethod"
+                checked={paymentMethod === 'paypal'}
+                onChange={() => setPaymentMethod('paypal')}
+              />
+              {dict.checkout.paymentMethodPaypal}
+            </label>
           </div>
         </section>
 

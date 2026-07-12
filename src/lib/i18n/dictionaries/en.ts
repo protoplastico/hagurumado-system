@@ -117,9 +117,13 @@ const en = {
     shippingFeeLabel: 'Shipping',
     calculatingFee: 'Calculating shipping...',
     totalLabel: 'Total',
+    paymentMethodLabel: 'Payment Method',
+    paymentMethodStripe: 'Credit Card (Stripe)',
+    paymentMethodPaypal: 'PayPal',
     submitButton: 'Proceed to Payment',
     submitting: 'Processing...',
     backToCart: 'Back to Cart',
+    paypalCaptureFailed: 'Your PayPal payment could not be completed. Please review your order and try again.',
   },
   checkoutComplete: {
     heading: 'Thank You for Your Order',

@@ -116,9 +116,13 @@ const ja = {
     shippingFeeLabel: '送料',
     calculatingFee: '送料を計算しています...',
     totalLabel: '合計',
+    paymentMethodLabel: 'お支払い方法',
+    paymentMethodStripe: 'クレジットカード(Stripe)',
+    paymentMethodPaypal: 'PayPal',
     submitButton: 'お支払いへ進む',
     submitting: '処理中...',
     backToCart: 'カートに戻る',
+    paypalCaptureFailed: 'PayPalでのお支払い処理が完了できませんでした。恐れ入りますが、内容をご確認のうえ再度お試しください。',
   },
   checkoutComplete: {
     heading: 'ご注文ありがとうございました',
