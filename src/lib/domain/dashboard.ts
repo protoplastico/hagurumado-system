@@ -41,6 +41,17 @@ export async function getDashboardStats(supabase: SupabaseClient): Promise<Dashb
       .eq('production_status', 'inspected'),
   ])
 
+  for (const result of [
+    newOrdersResult,
+    queueTotalResult,
+    waitWeeksResult,
+    acceptingResult,
+    inProgressResult,
+    shippingPoolResult,
+  ]) {
+    if (result.error) throw result.error
+  }
+
   const inProgressCounts = new Map<number, number>()
   for (const row of (inProgressResult.data ?? []) as unknown as {
     production_batches: { current_step: number | null }
