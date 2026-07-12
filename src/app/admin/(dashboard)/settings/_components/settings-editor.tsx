@@ -16,6 +16,7 @@ const FIELD_LABELS: Record<string, string> = {
   shipping_batch_size: '発送バッチサイズ既定値(件)',
   weekly_throughput_override: '週間スループット手動上書き(本/週、空欄で実績自動算出)',
   wait_estimate_safety_margin: '推定待ち週数の安全マージン(倍率)',
+  domestic_shipping_fee: '国内送料(円、クリックポスト固定)',
 }
 
 const FIELD_HINTS: Record<string, string> = {

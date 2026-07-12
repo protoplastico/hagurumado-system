@@ -38,3 +38,12 @@ export async function returnItemToQueue(
   })
   if (error) throw error
 }
+
+// TASK-21 / fn_queue_order_itemsへの型付きラッパー。決済完了(Stripe Webhook)時に
+// 注文内のreceivedアイテムを一括queuedへ遷移させる。
+export async function queueOrderItems(supabase: SupabaseClient, orderId: string): Promise<void> {
+  const { error } = await supabase.rpc('fn_queue_order_items', {
+    p_order_id: orderId,
+  })
+  if (error) throw error
+}

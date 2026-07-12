@@ -26,6 +26,7 @@ type CartContextValue = {
   addItem: (item: Omit<CartItem, 'id' | 'addedAt'>) => void
   removeItem: (id: string) => void
   updateQuantity: (id: string, quantity: number) => void
+  clearCart: () => void
   itemCount: number
 }
 
@@ -88,10 +89,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, quantity: clamped } : i)))
   }, [])
 
+  // TASK-21: チェックアウト完了(S-06到達時)にカートを空にするために使用。
+  const clearCart = useCallback(() => {
+    setItems([])
+  }, [])
+
   const itemCount = items.reduce((sum, i) => sum + i.quantity, 0)
 
   return (
-    <CartContext.Provider value={{ items, hydrated, addItem, removeItem, updateQuantity, itemCount }}>
+    <CartContext.Provider value={{ items, hydrated, addItem, removeItem, updateQuantity, clearCart, itemCount }}>
       {children}
     </CartContext.Provider>
   )
