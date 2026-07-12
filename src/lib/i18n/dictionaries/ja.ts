@@ -73,13 +73,28 @@ const ja = {
     addToCart: 'カートに入れる',
     globalStoppedNotice: 'ただいま全体の受注を一時休止しております。恐れ入りますが、しばらくお待ちください。',
     variationRequiredNotice: 'ペン機種を選択してください。',
-    cartComingSoon:
-      'カート機能は準備中です。ご選択内容は以下の通り記録されました(このまま購入手続きへ進む機能は近日公開予定です)。',
+    addedToCartSuccess: 'カートに追加しました。',
+    goToCart: 'カートを見る',
     customOrderHeading: 'フルオーダーメイド商品について',
     customOrderNotice:
       'この商品はお客様ごとに仕様をお伺いするフルオーダーメイド品です。ご希望の内容をガイドページの連絡先までお問い合わせください。申込フォームは準備中です。',
     customOrderContactCta: 'お問い合わせはこちら',
     notFoundHeading: '商品が見つかりませんでした',
+  },
+  cart: {
+    heading: '買い物カゴ',
+    empty: 'カートに商品がありません。',
+    browse: '商品一覧を見る',
+    quantity: '数量',
+    remove: '削除',
+    subtotal: '小計',
+    checkout: 'レジに進む',
+    loading: '価格を確認しています...',
+    noteLabel: 'ご要望',
+    priceChangedNotice: '価格が改定されました。現在の価格が表示されています。',
+    variationStoppedNotice: 'この機種は現在ご注文いただけません。',
+    unavailableNotice: 'この商品は現在ご利用いただけません。',
+    checkoutBlockedNotice: 'ご注文いただけない商品が含まれているため、レジに進めません。該当商品を削除してください。',
   },
 } as const
 

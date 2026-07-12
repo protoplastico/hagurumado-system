@@ -74,13 +74,28 @@ const en = {
     addToCart: 'Add to Cart',
     globalStoppedNotice: 'We are currently pausing all new orders. Please check back soon.',
     variationRequiredNotice: 'Please select a pen model.',
-    cartComingSoon:
-      'Cart functionality is coming soon. Your selection has been recorded below (checkout is not yet available).',
+    addedToCartSuccess: 'Added to your cart.',
+    goToCart: 'View Cart',
     customOrderHeading: 'About this full-custom item',
     customOrderNotice:
       'This is a fully custom item made to your specifications. Please contact us via the guide page with your request — an online application form is coming soon.',
     customOrderContactCta: 'Contact Us',
     notFoundHeading: 'Product not found',
+  },
+  cart: {
+    heading: 'Your Cart',
+    empty: 'Your cart is empty.',
+    browse: 'Browse the shop',
+    quantity: 'Qty',
+    remove: 'Remove',
+    subtotal: 'Subtotal',
+    checkout: 'Proceed to Checkout',
+    loading: 'Checking current prices...',
+    noteLabel: 'Note',
+    priceChangedNotice: 'The price has been updated. The current price is shown.',
+    variationStoppedNotice: 'This model is not currently available for order.',
+    unavailableNotice: 'This item is no longer available.',
+    checkoutBlockedNotice: 'Your cart contains an item that cannot be ordered. Please remove it to continue.',
   },
 } as const
 

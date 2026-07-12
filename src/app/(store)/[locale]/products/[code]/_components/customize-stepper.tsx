@@ -1,11 +1,13 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
 import { formatPrice, getPriceForLocale } from '@/lib/domain/pricing'
 import { buildOptionsSnapshot, getOptionDelta, type OptionsSnapshotEntry } from '@/lib/domain/options-snapshot'
 import type { ProductDetail, ProductDetailOptionGroup } from '@/lib/domain/store-products'
 import { PEN_MAKER_LABELS } from '@/lib/domain/enums'
+import { useCart } from '@/lib/store/cart'
 
 type Props = {
   locale: Locale
@@ -15,6 +17,7 @@ type Props = {
 
 export function CustomizeStepper({ locale, product, acceptingOrdersGlobal }: Props) {
   const dict = t(locale)
+  const { addItem } = useCart()
   const totalSteps = 1 + product.optionGroups.length + 1 // variation + option groups + summary
   const [step, setStep] = useState(0)
   const [selectedVariationId, setSelectedVariationId] = useState<string | null>(null)
@@ -70,6 +73,29 @@ export function CustomizeStepper({ locale, product, acceptingOrdersGlobal }: Pro
   }
 
   const snapshot: OptionsSnapshotEntry[] = buildOptionsSnapshot(selections, locale)
+
+  function handleAddToCart() {
+    if (!acceptingOrdersGlobal || !selectedVariation) return
+    const addedPriceDomestic =
+      product.price_domestic + selections.reduce((sum, s) => sum + s.value.price_delta_domestic, 0)
+    const addedPriceInternational =
+      product.price_international + selections.reduce((sum, s) => sum + s.value.price_delta_international, 0)
+
+    addItem({
+      productId: product.id,
+      productCode: product.code,
+      variationId: selectedVariation.id,
+      options: selections.map((s) => ({
+        groupId: s.group.id,
+        valueId: s.value.id,
+        note: notes[s.group.id]?.trim() || undefined,
+      })),
+      quantity: 1,
+      addedPriceDomestic,
+      addedPriceInternational,
+    })
+    setAddedToCart(true)
+  }
 
   return (
     <div className="border border-sumi/10 bg-kinari-light p-5">
@@ -187,15 +213,18 @@ export function CustomizeStepper({ locale, product, acceptingOrdersGlobal }: Pro
           )}
 
           {addedToCart && (
-            <p className="mb-3 border border-accent/30 bg-white px-3 py-2 text-xs text-sumi">
-              {dict.productDetail.cartComingSoon}
+            <p className="mb-3 flex items-center justify-between border border-accent/30 bg-white px-3 py-2 text-xs text-sumi">
+              <span>{dict.productDetail.addedToCartSuccess}</span>
+              <Link href={`/${locale}/cart`} className="font-medium text-accent underline">
+                {dict.productDetail.goToCart}
+              </Link>
             </p>
           )}
 
           <button
             type="button"
             disabled={!acceptingOrdersGlobal || !selectedVariation}
-            onClick={() => setAddedToCart(true)}
+            onClick={handleAddToCart}
             className="w-full border border-sumi/30 py-3 text-sm text-sumi transition-colors hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
           >
             {dict.productDetail.addToCart}

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
 import { LocaleSwitcher } from './locale-switcher'
+import { CartBadge } from './cart-badge'
 
 export function StoreHeader({ locale }: { locale: Locale }) {
   const dict = t(locale)
@@ -19,8 +20,9 @@ export function StoreHeader({ locale }: { locale: Locale }) {
           <Link href={`/${locale}/products`} className="hover:text-accent">
             {dict.common.products}
           </Link>
-          <Link href={`/${locale}/cart`} aria-label={dict.common.cart} className="hover:text-accent">
+          <Link href={`/${locale}/cart`} aria-label={dict.common.cart} className="relative hover:text-accent">
             <CartIcon />
+            <CartBadge />
           </Link>
           <Link href={`/${locale}/account/login`} className="hover:text-accent">
             {dict.common.login}
