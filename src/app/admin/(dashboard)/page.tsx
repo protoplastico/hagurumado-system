@@ -1,12 +1,18 @@
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getDashboardStats } from '@/lib/domain/dashboard'
+import { getDashboardStats, getTopWoodSpeciesBacklog, getWeeklyThroughputHistory } from '@/lib/domain/dashboard'
+import { WeeklyThroughputChart } from './_components/weekly-throughput-chart'
+import { WoodSpeciesBacklogChart } from './_components/wood-species-backlog-chart'
 
 // 常にリクエスト時点の最新データを取得する(認証必須の管理画面のため静的化しない)
 export const dynamic = 'force-dynamic'
 
 export default async function AdminDashboardPage() {
   const supabase = createAdminClient()
-  const stats = await getDashboardStats(supabase)
+  const [stats, throughputHistory, woodSpeciesBacklog] = await Promise.all([
+    getDashboardStats(supabase),
+    getWeeklyThroughputHistory(supabase),
+    getTopWoodSpeciesBacklog(supabase),
+  ])
 
   return (
     <div className="space-y-6">
@@ -20,6 +26,20 @@ export default async function AdminDashboardPage() {
           {stats.acceptingOrders ? '受付中' : '受注休止中'}
         </span>
       </div>
+
+      {!stats.acceptingOrders && (
+        <div className="rounded-lg border border-red-300 bg-red-50 p-4 text-sm text-red-900">
+          受注を停止しています。
+          {stats.acceptingOrdersOverrideActive
+            ? '(設定画面の手動オーバーライドによる停止)'
+            : '(推定待ち週数が閾値を超えたため自動停止)'}
+        </div>
+      )}
+      {stats.acceptingOrders && stats.acceptingOrdersOverrideActive && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+          手動オーバーライドが有効です。受注受付フラグは自動判定では変更されません。設定画面で解除できます。
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="新規注文数(24h)" value={stats.newOrdersLast24h} />
@@ -47,12 +67,17 @@ export default async function AdminDashboardPage() {
         )}
       </section>
 
-      <section>
-        <h2 className="mb-3 text-lg font-semibold text-gray-900">週間スループット推移</h2>
-        <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-gray-300 text-sm text-gray-400">
-          グラフは後続フェーズで実装予定
-        </div>
-      </section>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <section>
+          <h2 className="mb-3 text-lg font-semibold text-gray-900">週間スループット推移(直近12週)</h2>
+          <WeeklyThroughputChart data={throughputHistory} />
+        </section>
+
+        <section>
+          <h2 className="mb-3 text-lg font-semibold text-gray-900">樹種別キュー滞留(上位5)</h2>
+          <WoodSpeciesBacklogChart data={woodSpeciesBacklog} />
+        </section>
+      </div>
     </div>
   )
 }
