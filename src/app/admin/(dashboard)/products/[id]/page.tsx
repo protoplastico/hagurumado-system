@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getProductImageUrl } from '@/lib/domain/product-image'
 import { ProductEditClient } from './edit-client'
 import type { VariationRow } from '../_components/variations-section'
 
@@ -56,6 +57,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
       variations={(variations ?? []) as VariationRow[]}
       assignedGroups={assignedGroups}
       availableGroups={availableGroups}
+      imageUrl={getProductImageUrl(supabase, product.image_path as string | null)}
     />
   )
 }

@@ -59,6 +59,60 @@ export async function toggleProductActive(productId: string, next: boolean): Pro
   revalidatePath('/admin/products')
 }
 
+// TASK-19: 商品画像(Supabase Storage `product-images`バケット、products.image_pathに相対パスを保存)。
+export async function uploadProductImage(productId: string, formData: FormData): Promise<void> {
+  const file = formData.get('file')
+  if (!(file instanceof File) || file.size === 0) throw new Error('ファイルが選択されていません')
+
+  const supabase = createAdminClient()
+
+  const { data: existing, error: fetchError } = await supabase
+    .from('products')
+    .select('image_path')
+    .eq('id', productId)
+    .single()
+  if (fetchError) throw fetchError
+  const previousPath = existing?.image_path as string | null
+
+  const ext = file.name.split('.').pop() || 'jpg'
+  const path = `${productId}/${Date.now()}.${ext}`
+
+  const { error: uploadError } = await supabase.storage
+    .from('product-images')
+    .upload(path, file, { contentType: file.type, upsert: false })
+  if (uploadError) throw uploadError
+
+  const { error: updateError } = await supabase.from('products').update({ image_path: path }).eq('id', productId)
+  if (updateError) throw updateError
+
+  if (previousPath) {
+    await supabase.storage.from('product-images').remove([previousPath])
+  }
+
+  revalidatePath(`/admin/products/${productId}`)
+}
+
+export async function removeProductImage(productId: string): Promise<void> {
+  const supabase = createAdminClient()
+
+  const { data: existing, error: fetchError } = await supabase
+    .from('products')
+    .select('image_path')
+    .eq('id', productId)
+    .single()
+  if (fetchError) throw fetchError
+  const path = existing?.image_path as string | null
+
+  const { error: updateError } = await supabase.from('products').update({ image_path: null }).eq('id', productId)
+  if (updateError) throw updateError
+
+  if (path) {
+    await supabase.storage.from('product-images').remove([path])
+  }
+
+  revalidatePath(`/admin/products/${productId}`)
+}
+
 export type VariationInput = {
   name_ja: string
   name_en: string
