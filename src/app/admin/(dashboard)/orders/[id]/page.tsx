@@ -5,6 +5,7 @@ import { PRODUCTION_STATUS_LABELS_ADMIN, type ProductionStatus } from '@/lib/dom
 import type { PaymentStatus } from '@/lib/domain/payment-status'
 import { AdminMemoEditor } from '../_components/admin-memo-editor'
 import { PaymentStatusControl } from '../_components/payment-status-control'
+import { DelayNotificationButton } from '../_components/delay-notification-button'
 
 export const dynamic = 'force-dynamic'
 
@@ -111,7 +112,10 @@ export default async function OrderDetailPage({ params }: { params: { id: string
       </section>
 
       <section>
-        <h2 className="mb-3 text-lg font-semibold text-gray-900">メール履歴</h2>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-lg font-semibold text-gray-900">メール履歴</h2>
+          <DelayNotificationButton orderId={order.id} />
+        </div>
         {(emailLogs ?? []).length === 0 ? (
           <p className="text-sm text-gray-500">送信履歴はありません。</p>
         ) : (
