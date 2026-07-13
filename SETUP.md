@@ -3,8 +3,11 @@
 Claude Codeでの開発開始前に、以下を**ご自身で**準備してください(アカウント作成・認証情報の取り扱いはAIには任せられません)。
 
 ## 1. アカウント準備
-1. Supabase(https://supabase.com)— 新規プロジェクト作成(リージョン:Tokyo)
-2. Vercel(https://vercel.com)— アカウントのみ(デプロイはPhase 1完了後)
+1. Supabase(https://supabase.com)— 新規プロジェクト作成(リージョン:Tokyo)。このプロジェクトは
+   開発・ステージング共用の**devプロジェクト**として扱う。Phase 5(TASK-33本番移行)で実データ用の
+   別プロジェクト(**prodプロジェクト**)を新規作成するまでは、これ1つのみでよい
+2. Vercel(https://vercel.com)— アカウントのみ(デプロイはPhase 1完了後。実際の接続手順はTASK-30
+   `docs/vercel-deploy.md`参照)
 3. GitHub — 空のプライベートリポジトリ作成(例:hagurumado-system)
 
 ## 2. 認証情報
@@ -76,6 +79,11 @@ NEXT_PUBLIC_SITE_URL=https://<デプロイ先のドメイン>
    未設定のままでもビルド・動作は問題ない(Cookie同意バナー自体が表示されず、GAは読み込まれない)。
 4. テスト購入の確認は、GA4管理画面 > 管理 > DebugView で行う(開発時は`?debug_mode=1`等は使わず、
    Chrome拡張「Google Analytics Debugger」またはGA4の`debug_mode`パラメータ付き手動テストで確認すること)。
+
+## 9. TASK-30: Vercelステージングデプロイ
+手順・環境変数一覧表・Webhook設定・既知の注意点は `docs/vercel-deploy.md` にまとめた。
+GitHubリポジトリ連携、環境変数の登録、Stripe/PayPal/SanityのWebhook先URL設定は
+すべて人間の作業(Vercel/各サービスのコンソール操作)が必要なため、そちらを参照して実施すること。
 
 ## 進行管理
 - 各TASK完了ごとにコミットが積まれる。動作確認して次へ
