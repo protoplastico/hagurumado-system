@@ -20,6 +20,16 @@ const nextConfig = {
       { protocol: 'https', hostname: 'cdn.sanity.io', pathname: '/images/**' },
     ],
   },
+  // TASK-33: 旧WordPressサイトの主要URL→新サイトへの301リダイレクト。
+  // 指示書で例示された/shopのみ暫定的に用意した。実際の旧URL一覧(WordPressのサイトマップ・
+  // Google Search Console等で確認)に基づき、人間がTASK-33実行前にここへ追記すること
+  // (docs/production-launch-runbook.md §3参照)。
+  async redirects() {
+    return [
+      { source: '/shop', destination: '/ja/products', permanent: true },
+      { source: '/shop/:path*', destination: '/ja/products', permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;
