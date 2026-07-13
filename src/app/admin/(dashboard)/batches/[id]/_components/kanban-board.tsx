@@ -37,10 +37,6 @@ export type Batch = {
   completed_at: string | null
 }
 
-// fn_advance_batch_step(TASK-03)側も工程7到達で一括inspected化する前提でハードコードしているため、
-// フロント側の「検品チェック」判定もここに合わせる。
-const INSPECTION_STEP_NO = 7
-
 export function KanbanBoard({ batch, items, steps }: { batch: Batch; items: BatchItem[]; steps: ProductionStep[] }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -50,7 +46,12 @@ export function KanbanBoard({ batch, items, steps }: { batch: Batch; items: Batc
   const [returnTarget, setReturnTarget] = useState<BatchItem | null>(null)
   const [returnReason, setReturnReason] = useState('')
 
-  const isAtInspection = batch.status === 'in_progress' && batch.current_step === INSPECTION_STEP_NO
+  // TASK-37: fn_advance_batch_step側も「このバッチに適用される工程の最後」で完了する動的な
+  // 実装に変更したため(標準バッチ=工程7、オーダーメイドバッチ=追加工程込みの最終工程)、
+  // フロント側もハードコードの工程番号ではなく、propsで渡された(既にis_custom_extraで
+  // フィルタ済みの)steps配列の最後の工程番号で判定する。
+  const lastStepNo = steps.length > 0 ? steps[steps.length - 1].step_no : null
+  const isAtInspection = batch.status === 'in_progress' && batch.current_step === lastStepNo
   const allChecked = isAtInspection && items.length > 0 && items.every((item) => checkedIds.has(item.id))
 
   function toggleChecked(itemId: string) {
@@ -161,7 +162,11 @@ export function KanbanBoard({ batch, items, steps }: { batch: Batch; items: Batc
       <section>
         <h2 className="mb-3 text-lg font-semibold text-gray-900">
           アイテム一覧({items.length}本)
-          {isAtInspection && <span className="ml-2 text-sm font-normal text-gray-500">検品チェック</span>}
+          {isAtInspection && (
+            <span className="ml-2 text-sm font-normal text-gray-500">
+              {steps[steps.length - 1]?.name_ja ?? '検品'}チェック
+            </span>
+          )}
         </h2>
         <div className="space-y-2">
           {items.map((item) => (

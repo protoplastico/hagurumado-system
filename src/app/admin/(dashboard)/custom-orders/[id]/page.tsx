@@ -7,6 +7,7 @@ import { StatusControl } from './_components/status-control'
 import { MediaViewer } from './_components/media-viewer'
 import { DiagnosisPanel } from './_components/diagnosis-panel'
 import { OrderConversion } from './_components/order-conversion'
+import { Timeline } from './_components/timeline'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,7 +20,7 @@ const PAIN_AREA_LABELS: Record<string, string> = {
   shoulder: '肩・首',
 }
 
-// A-17詳細:回答・メディア閲覧・ステータス管理。往復履歴のタイムラインUIはTASK-37で拡張する。
+// A-17詳細:回答・メディア閲覧・ステータス管理・往復履歴タイムライン(TASK-37)。
 export default async function CustomOrderDetailPage({ params }: { params: { id: string } }) {
   const supabase = createAdminClient()
   const inquiry = await getCustomOrderInquiry(supabase, params.id)
@@ -105,22 +106,10 @@ export default async function CustomOrderDetailPage({ params }: { params: { id: 
         <DiagnosisPanel inquiryId={inquiry.id} gripShapeOptions={gripShapeOptions} />
       </section>
 
-      {threads.length > 0 && (
-        <section className="rounded-md border border-gray-200 bg-white p-4">
-          <h2 className="mb-3 text-sm font-semibold text-gray-900">往復履歴</h2>
-          <ul className="space-y-3">
-            {threads.map((th) => (
-              <li key={th.id} className="border-l-2 border-gray-200 pl-3 text-sm">
-                <p className="text-xs text-gray-400">
-                  {th.direction === 'inbound' ? '受信' : '送信'} ・ {new Date(th.created_at).toLocaleString('ja-JP')}
-                  {th.ai_draft && ' ・ AI生成(職人確認済)'}
-                </p>
-                <p className="whitespace-pre-wrap text-gray-800">{th.body}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+      <section className="rounded-md border border-gray-200 bg-white p-4">
+        <h2 className="mb-3 text-sm font-semibold text-gray-900">往復履歴(質問票→AI所見→提案→返信→確定)</h2>
+        <Timeline threads={threads} />
+      </section>
 
       {inquiry.status !== 'ordered' && inquiry.status !== 'closed' && (
         <section>

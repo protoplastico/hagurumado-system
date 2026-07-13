@@ -99,3 +99,37 @@ export async function getCustomOrderThreads(
   if (error) throw error
   return (data ?? []) as CustomOrderThreadEntry[]
 }
+
+const STALE_INQUIRY_DAYS = 7
+
+export type CustomOrderDashboardStats = {
+  inProgressCount: number
+  staleInquiries: CustomOrderInquirySummary[]
+}
+
+// TASK-37項目3/5: ダッシュボード向け。進行中(受注化・完了以外)件数と、
+// new/diagnosingのまま7日以上放置されている申込の一覧。
+export async function getCustomOrderDashboardStats(supabase: SupabaseClient): Promise<CustomOrderDashboardStats> {
+  const staleThreshold = new Date(Date.now() - STALE_INQUIRY_DAYS * 24 * 60 * 60 * 1000).toISOString()
+
+  const [inProgressResult, staleResult] = await Promise.all([
+    supabase
+      .from('custom_order_inquiries')
+      .select('id', { count: 'exact', head: true })
+      .neq('status', 'ordered')
+      .neq('status', 'closed'),
+    supabase
+      .from('custom_order_inquiries')
+      .select('id, customer_name, customer_email, locale, status, created_at')
+      .in('status', ['new', 'diagnosing'])
+      .lt('created_at', staleThreshold)
+      .order('created_at', { ascending: true }),
+  ])
+  if (inProgressResult.error) throw inProgressResult.error
+  if (staleResult.error) throw staleResult.error
+
+  return {
+    inProgressCount: inProgressResult.count ?? 0,
+    staleInquiries: (staleResult.data ?? []) as CustomOrderInquirySummary[],
+  }
+}

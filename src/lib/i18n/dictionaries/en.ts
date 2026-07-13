@@ -101,8 +101,8 @@ const en = {
     goToCart: 'View Cart',
     customOrderHeading: 'About this full-custom item',
     customOrderNotice:
-      'This is a fully custom item made to your specifications. Please contact us via the guide page with your request — an online application form is coming soon.',
-    customOrderContactCta: 'Contact Us',
+      'This is a fully custom item made to your specifications. Fill out our application form to tell us about your grip and preferences, and a craftsman will review it and send you a diagnosis and proposal.',
+    customOrderContactCta: 'Apply for a Custom Order',
     notFoundHeading: 'Product not found',
   },
   cart: {

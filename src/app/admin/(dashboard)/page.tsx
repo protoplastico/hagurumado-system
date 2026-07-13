@@ -1,5 +1,7 @@
+import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getDashboardStats, getTopWoodSpeciesBacklog, getWeeklyThroughputHistory } from '@/lib/domain/dashboard'
+import { getCustomOrderDashboardStats } from '@/lib/domain/custom-order'
 import { WeeklyThroughputChart } from './_components/weekly-throughput-chart'
 import { WoodSpeciesBacklogChart } from './_components/wood-species-backlog-chart'
 
@@ -8,10 +10,11 @@ export const dynamic = 'force-dynamic'
 
 export default async function AdminDashboardPage() {
   const supabase = createAdminClient()
-  const [stats, throughputHistory, woodSpeciesBacklog] = await Promise.all([
+  const [stats, throughputHistory, woodSpeciesBacklog, customOrderStats] = await Promise.all([
     getDashboardStats(supabase),
     getWeeklyThroughputHistory(supabase),
     getTopWoodSpeciesBacklog(supabase),
+    getCustomOrderDashboardStats(supabase),
   ])
 
   return (
@@ -41,7 +44,24 @@ export default async function AdminDashboardPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {customOrderStats.staleInquiries.length > 0 && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+          <p className="font-medium">
+            オーダーメイド申込が{customOrderStats.staleInquiries.length}件、未対応のまま7日以上経過しています。
+          </p>
+          <ul className="mt-2 space-y-1">
+            {customOrderStats.staleInquiries.map((inquiry) => (
+              <li key={inquiry.id}>
+                <Link href={`/admin/custom-orders/${inquiry.id}`} className="underline hover:no-underline">
+                  {inquiry.customer_name}様({new Date(inquiry.created_at).toLocaleDateString('ja-JP')}申込)
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard label="新規注文数(24h)" value={stats.newOrdersLast24h} />
         <StatCard label="キュー総数" value={stats.queueTotal} />
         <StatCard
@@ -49,6 +69,7 @@ export default async function AdminDashboardPage() {
           value={stats.estimatedWaitWeeks != null ? stats.estimatedWaitWeeks.toFixed(1) : '—'}
         />
         <StatCard label="発送プール数" value={stats.shippingPoolCount} />
+        <StatCard label="オーダーメイド進行中" value={customOrderStats.inProgressCount} />
       </div>
 
       <section>
