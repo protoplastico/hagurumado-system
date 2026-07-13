@@ -5,25 +5,48 @@ import { getProductDetail } from '@/lib/domain/store-products'
 import { getOrderAcceptanceStatus } from '@/lib/domain/store-status'
 import { getProductImageUrl } from '@/lib/domain/product-image'
 import { formatPrice, getPriceForLocale } from '@/lib/domain/pricing'
+import { absoluteUrl, localizedAlternates } from '@/lib/seo'
 import { ProductImage } from '../../_components/product-image'
 import { WaitWeeksNotice } from '../../_components/wait-weeks-notice'
 import { CustomizeStepper } from './_components/customize-stepper'
 import { CustomOrderNotice } from './_components/custom-order-notice'
 import { ProductStory } from './_components/product-story'
 import { getProductContent } from '@/lib/sanity/queries'
+import { JsonLd } from '../../_components/json-ld'
 
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: { params: { locale: string; code: string } }) {
   const locale: Locale = isLocale(params.locale) ? params.locale : 'ja'
+  const dict = t(locale)
   const supabase = createClient()
   const product = await getProductDetail(supabase, params.code)
-  if (!product) return { title: t(locale).productDetail.notFoundHeading }
-  return { title: locale === 'ja' ? product.name_ja : product.name_en }
+  if (!product) return { title: dict.productDetail.notFoundHeading }
+
+  const name = locale === 'ja' ? product.name_ja : product.name_en
+  const woodSpecies = locale === 'ja' ? product.wood_species_ja : product.wood_species_en
+  const description = `${name}。${woodSpecies ? `${woodSpecies}。` : ''}${dict.seo.productDetailSuffix}`
+  const imageUrl = getProductImageUrl(supabase, product.image_path)
+  const path = `/products/${params.code}`
+
+  return {
+    title: name,
+    description,
+    alternates: localizedAlternates(locale, path),
+    openGraph: {
+      title: name,
+      description,
+      url: absoluteUrl(`/${locale}${path}`),
+      type: 'website',
+      images: imageUrl ? [imageUrl] : undefined,
+    },
+    twitter: { card: imageUrl ? 'summary_large_image' : 'summary', title: name, description },
+  }
 }
 
 export default async function ProductDetailPage({ params }: { params: { locale: string; code: string } }) {
   const locale: Locale = isLocale(params.locale) ? params.locale : 'ja'
+  const dict = t(locale)
   const supabase = createClient()
 
   const [product, status, productContent] = await Promise.all([
@@ -38,11 +61,42 @@ export default async function ProductDetailPage({ params }: { params: { locale: 
 
   const name = locale === 'ja' ? product.name_ja : product.name_en
   const woodSpecies = locale === 'ja' ? product.wood_species_ja : product.wood_species_en
+  const imageUrl = getProductImageUrl(supabase, product.image_path)
+  const productUrl = absoluteUrl(`/${locale}/products/${product.code}`)
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
+      {/* TASK-28: 受注生産のため価格改定リスクがあり、Product構造化データにpriceValidUntilは設定しない。 */}
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name,
+          ...(imageUrl ? { image: [imageUrl] } : {}),
+          ...(woodSpecies ? { description: woodSpecies } : {}),
+          offers: {
+            '@type': 'Offer',
+            url: productUrl,
+            priceCurrency: 'JPY',
+            price: String(getPriceForLocale(product, locale)),
+            availability: status.acceptingOrders ? 'https://schema.org/PreOrder' : 'https://schema.org/OutOfStock',
+          },
+        }}
+      />
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: dict.common.siteName, item: absoluteUrl(`/${locale}`) },
+            { '@type': 'ListItem', position: 2, name: dict.productList.heading, item: absoluteUrl(`/${locale}/products`) },
+            { '@type': 'ListItem', position: 3, name, item: productUrl },
+          ],
+        }}
+      />
+
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-        <ProductImage src={getProductImageUrl(supabase, product.image_path)} alt={name} />
+        <ProductImage src={imageUrl} alt={name} />
 
         <div>
           <h1 className="text-xl font-semibold text-sumi">{name}</h1>

@@ -28,6 +28,15 @@ export async function getFeaturedActiveProducts(
   return (data ?? []) as StoreProductSummary[]
 }
 
+export type ProductSitemapEntry = { code: string; updated_at: string }
+
+// TASK-28: sitemap.xml生成用。is_active=falseの商品(下書き・非公開扱い)は含めない。
+export async function getAllActiveProductsForSitemap(supabase: SupabaseClient): Promise<ProductSitemapEntry[]> {
+  const { data, error } = await supabase.from('products').select('code, updated_at').eq('is_active', true)
+  if (error) throw error
+  return (data ?? []) as ProductSitemapEntry[]
+}
+
 export type ProductListFilters = {
   maker?: string
   series?: string

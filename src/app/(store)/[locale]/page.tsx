@@ -6,20 +6,25 @@ import { getFeaturedActiveProducts } from '@/lib/domain/store-products'
 import { getProductionStepNames } from '@/lib/domain/store-craft-process'
 import { formatPrice, getPriceForLocale } from '@/lib/domain/pricing'
 import { getSiteSettings } from '@/lib/sanity/queries'
+import { absoluteUrl, localizedAlternates } from '@/lib/seo'
 import { OrderStatusBanner } from './_components/order-status-banner'
 import { HeroSection } from './_components/hero-section'
 import { ConceptSection } from './_components/concept-section'
 import { CraftProcessSection } from './_components/craft-process-section'
 import { SeriesSection } from './_components/series-section'
+import { JsonLd } from './_components/json-ld'
 
 export const dynamic = 'force-dynamic'
 
 export function generateMetadata({ params }: { params: { locale: string } }) {
   const locale: Locale = isLocale(params.locale) ? params.locale : 'ja'
   const dict = t(locale)
+  const description = dict.seo.homeDescription
   return {
-    title: dict.common.siteName,
-    description: dict.home.brandStatement,
+    description,
+    alternates: localizedAlternates(locale, ''),
+    openGraph: { title: dict.common.siteNameFull, description, url: absoluteUrl(`/${locale}`), type: 'website' },
+    twitter: { card: 'summary', title: dict.common.siteNameFull, description },
   }
 }
 
@@ -39,6 +44,18 @@ export default async function StoreHomePage({ params }: { params: { locale: stri
 
   return (
     <div>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: dict.common.siteNameFull,
+          url: absoluteUrl(`/${locale}`),
+          ...(siteSettings?.snsLinks && siteSettings.snsLinks.length > 0
+            ? { sameAs: siteSettings.snsLinks.map((link) => link.url) }
+            : {}),
+        }}
+      />
+
       <OrderStatusBanner locale={locale} status={status} />
 
       <HeroSection

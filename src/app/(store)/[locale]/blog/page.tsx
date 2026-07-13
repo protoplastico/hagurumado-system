@@ -3,12 +3,29 @@ import Link from 'next/link'
 import { isLocale, t, type Locale } from '@/lib/i18n'
 import { getBlogPosts } from '@/lib/sanity/queries'
 import { urlFor } from '@/lib/sanity/image'
+import { absoluteUrl } from '@/lib/seo'
 
 const PAGE_SIZE = 12
 
-export function generateMetadata({ params }: { params: { locale: string } }) {
+// ページネーションURL(?page=N)はcanonicalを自ページに向け(重複コンテンツとして
+// 潰さない)、hreflangは各言語の1ページ目を指す(ページ番号違いの相互alternateは
+// 意味を持たないため)。
+export function generateMetadata({ params, searchParams }: { params: { locale: string }; searchParams: { page?: string } }) {
   const locale: Locale = isLocale(params.locale) ? params.locale : 'ja'
-  return { title: t(locale).blog.heading }
+  const dict = t(locale)
+  const description = dict.seo.blogListDescription
+  const page = Math.max(0, Number(searchParams.page ?? '0') || 0)
+  const path = page > 0 ? `/blog?page=${page}` : '/blog'
+  return {
+    title: dict.blog.heading,
+    description,
+    alternates: {
+      canonical: absoluteUrl(`/${locale}${path}`),
+      languages: { ja: absoluteUrl('/ja/blog'), en: absoluteUrl('/en/blog'), 'x-default': absoluteUrl('/ja/blog') },
+    },
+    openGraph: { title: dict.blog.heading, description, url: absoluteUrl(`/${locale}/blog`), type: 'website' },
+    twitter: { card: 'summary', title: dict.blog.heading, description },
+  }
 }
 
 function formatDate(iso: string, locale: Locale) {

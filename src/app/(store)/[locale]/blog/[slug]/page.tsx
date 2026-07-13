@@ -1,26 +1,46 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { toPlainText } from '@portabletext/react'
 import { isLocale, t, type Locale } from '@/lib/i18n'
 import { getBlogPost } from '@/lib/sanity/queries'
 import { urlFor } from '@/lib/sanity/image'
+import { absoluteUrl, localizedAlternates } from '@/lib/seo'
 import { BlogPostBody } from './_components/blog-post-body'
+
+const DESCRIPTION_MAX_LENGTH = 120
 
 // TASK-27: ブログ詳細。Portable Text本文+見出しから自動生成した目次、
 // カバー画像をog:imageとして設定するOGP対応を行う。
+// TASK-28: 本文冒頭のプレーンテキストを抜粋してdescriptionとする(専用summaryフィールドは
+// guidePageのみのため、本文からの抜粋で代替)。
 export async function generateMetadata({ params }: { params: { locale: string; slug: string } }) {
   const locale: Locale = isLocale(params.locale) ? params.locale : 'ja'
+  const dict = t(locale)
   const post = await getBlogPost(params.slug).catch(() => null)
-  if (!post) return { title: t(locale).blog.heading }
+  if (!post) return { title: dict.blog.heading }
 
   const title = locale === 'ja' ? post.title.ja : (post.title.en ?? post.title.ja)
+  const bodyBlocks = locale === 'ja' ? post.body?.ja : post.body?.en
+  const excerpt = bodyBlocks && bodyBlocks.length > 0 ? toPlainText(bodyBlocks).slice(0, DESCRIPTION_MAX_LENGTH) : ''
+  const description = excerpt || dict.seo.blogDetailFallback
   const ogImage = post.coverImage
     ? urlFor(post.coverImage).width(1200).height(630).fit('crop').auto('format').url()
     : undefined
+  const path = `/blog/${params.slug}`
 
   return {
     title,
-    openGraph: { title, type: 'article', images: ogImage ? [ogImage] : undefined },
+    description,
+    alternates: localizedAlternates(locale, path),
+    openGraph: {
+      title,
+      description,
+      url: absoluteUrl(`/${locale}${path}`),
+      type: 'article',
+      images: ogImage ? [ogImage] : undefined,
+    },
+    twitter: { card: ogImage ? 'summary_large_image' : 'summary', title, description },
   }
 }
 

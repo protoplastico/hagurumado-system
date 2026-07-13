@@ -3,6 +3,8 @@
 const en = {
   common: {
     siteName: 'Hagurumado',
+    // TASK-28: suffix for the title template "Page Name | Hagurumado Zaikusho, Yokosuka".
+    siteNameFull: 'Hagurumado Zaikusho, Yokosuka',
     products: 'Shop',
     cart: 'Cart',
     login: 'Log in',
@@ -214,6 +216,22 @@ const en = {
     locationHeading: 'Location',
     locationCity: 'Yokosuka, Kanagawa, Japan',
     locationPlaceholder: '{{PLACEHOLDER: Please add the full address / map once confirmed, via the Site Settings in Sanity Studio.}}',
+  },
+  seo: {
+    homeDescription:
+      'Hagurumado Zaikusho is a wooden pen-grip workshop in Yokosuka, Kanagawa. Each grip is hand-carved to order from natural wood, sorted by species.',
+    productListDescription:
+      'Wooden pen grips compatible with Wacom, XP-Pen, Xencelabs, and Apple Pencil. Choose your favorite wood species and series.',
+    productDetailSuffix: 'A handcrafted, made-to-order pen grip that celebrates the natural character of the wood.',
+    guideListDescription:
+      'Helpful information for before and after your order, including how to identify your pen model, shipping, and frequently asked questions.',
+    guideDetailFallback: 'A Hagurumado Zaikusho guide page.',
+    blogListDescription: 'News from the workshop, including our craft process and introductions to the wood species we use.',
+    blogDetailFallback: 'A Hagurumado Zaikusho blog post.',
+    aboutDescription:
+      'About Hagurumado Zaikusho, a workshop in Yokosuka handcrafting wooden pen grips. Learn about our approach and location.',
+    tokushohoDescription: "Hagurumado Zaikusho's legal notice under the Specified Commercial Transactions Act.",
+    privacyDescription: "Hagurumado Zaikusho's privacy policy.",
   },
 } as const
 

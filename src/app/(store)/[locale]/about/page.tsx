@@ -1,12 +1,21 @@
 import { isLocale, t, type Locale } from '@/lib/i18n'
 import { getSiteSettings } from '@/lib/sanity/queries'
 import { SanityPortableText } from '@/lib/sanity/portable-text'
+import { absoluteUrl, localizedAlternates } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
 
 export function generateMetadata({ params }: { params: { locale: string } }) {
   const locale: Locale = isLocale(params.locale) ? params.locale : 'ja'
-  return { title: t(locale).about.heading }
+  const dict = t(locale)
+  const description = dict.seo.aboutDescription
+  return {
+    title: dict.about.heading,
+    description,
+    alternates: localizedAlternates(locale, '/about'),
+    openGraph: { title: dict.about.heading, description, url: absoluteUrl(`/${locale}/about`), type: 'website' },
+    twitter: { card: 'summary', title: dict.about.heading, description },
+  }
 }
 
 // TASK-26: Aboutページ。本文はSanity siteSettings.aboutBody(工房紹介・職人紹介・所在地を

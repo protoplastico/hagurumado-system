@@ -89,6 +89,17 @@ export async function getBlogPosts(
   return {posts, total}
 }
 
+const ALL_BLOG_SLUGS_QUERY = /* groq */ `
+*[_type == "blogPost" && publishedAt <= now()] | order(publishedAt desc){
+  slug,
+  publishedAt
+}`
+
+// TASK-28: sitemap.xml生成用。ページネーションせず公開済み全件のslug/publishedAtのみ取得する。
+export async function getAllPublishedBlogSlugs(): Promise<Pick<BlogPost, 'slug' | 'publishedAt'>[]> {
+  return sanityFetch(ALL_BLOG_SLUGS_QUERY, {}, {tags: ['blogPost']})
+}
+
 const SITE_SETTINGS_QUERY = /* groq */ `*[_type == "siteSettings"][0]{
   _id,
   heroTitle,

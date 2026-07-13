@@ -1,12 +1,21 @@
 import Link from 'next/link'
 import { isLocale, t, type Locale } from '@/lib/i18n'
 import { getGuidePages } from '@/lib/sanity/queries'
+import { absoluteUrl, localizedAlternates } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
 
 export function generateMetadata({ params }: { params: { locale: string } }) {
   const locale: Locale = isLocale(params.locale) ? params.locale : 'ja'
-  return { title: t(locale).guide.heading }
+  const dict = t(locale)
+  const description = dict.seo.guideListDescription
+  return {
+    title: dict.guide.heading,
+    description,
+    alternates: localizedAlternates(locale, '/guide'),
+    openGraph: { title: dict.guide.heading, description, url: absoluteUrl(`/${locale}/guide`), type: 'website' },
+    twitter: { card: 'summary', title: dict.guide.heading, description },
+  }
 }
 
 // TASK-27: ガイド索引をSanity guidePageから動的に取得する(TASK-24の静的実装から移行)。

@@ -3,6 +3,8 @@
 const ja = {
   common: {
     siteName: '葉車堂細工所',
+    // TASK-28: titleテンプレート「ページ名 | 葉車堂細工所 横須賀」用のサフィックス。
+    siteNameFull: '葉車堂細工所 横須賀',
     products: '商品一覧',
     cart: 'カート',
     login: 'ログイン',
@@ -213,6 +215,18 @@ const ja = {
     locationHeading: '所在地',
     locationCity: '神奈川県横須賀市',
     locationPlaceholder: '{{PLACEHOLDER: 詳細住所・地図等が確定しましたらSanity Studioのサイト設定からご入稿ください。}}',
+  },
+  seo: {
+    homeDescription: '神奈川県横須賀市の木製ペングリップ工房、葉車堂細工所。天然木を一本一本手作業で削り出す、樹種別受注生産のペングリップをお届けします。',
+    productListDescription: 'Wacom・XP-Pen・Xencelabs・Apple Pencilに対応する木製ペングリップの一覧。樹種やシリーズからお好みの一本をお選びいただけます。',
+    productDetailSuffix: '木の表情を活かした手作りの受注生産ペングリップです。',
+    guideListDescription: 'ペンの機種の見分けかた、発送について、よくあるご質問など、ご注文前後に役立つ情報をまとめています。',
+    guideDetailFallback: '葉車堂細工所のご利用ガイドです。',
+    blogListDescription: '葉車堂細工所の制作の様子や樹種のご紹介など、工房からのお知らせをお届けします。',
+    blogDetailFallback: '葉車堂細工所のブログ記事です。',
+    aboutDescription: '横須賀の工房で天然木のペングリップを手作りする葉車堂細工所について。ものづくりの姿勢や所在地をご紹介します。',
+    tokushohoDescription: '葉車堂細工所の特定商取引法に基づく表記です。',
+    privacyDescription: '葉車堂細工所のプライバシーポリシーです。',
   },
 } as const
 

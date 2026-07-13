@@ -1,7 +1,8 @@
+import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import { notFound } from 'next/navigation'
 import { Noto_Serif_JP } from 'next/font/google'
-import { isLocale, LOCALES, type Locale } from '@/lib/i18n'
+import { isLocale, LOCALES, t, type Locale } from '@/lib/i18n'
 import { CartProvider } from '@/lib/store/cart'
 import { StoreHeader } from './_components/store-header'
 import { StoreFooter } from './_components/store-footer'
@@ -19,6 +20,16 @@ const notoSerifJP = Noto_Serif_JP({
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }))
+}
+
+// TASK-28: titleテンプレート「ページ名 | 葉車堂細工所 横須賀」。子ページがstring titleのみ
+// 設定した場合に自動でこのテンプレートが適用される(objectで独自titleを返せば上書き可能)。
+export function generateMetadata({ params }: { params: { locale: string } }): Metadata {
+  const locale: Locale = isLocale(params.locale) ? params.locale : 'ja'
+  const dict = t(locale)
+  return {
+    title: { template: `%s | ${dict.common.siteNameFull}`, default: dict.common.siteNameFull },
+  }
 }
 
 export default function StoreLayout({

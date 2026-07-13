@@ -1,8 +1,21 @@
 import { isLocale, t, type Locale } from '@/lib/i18n'
+import { absoluteUrl, localizedAlternates } from '@/lib/seo'
 
 export function generateMetadata({ params }: { params: { locale: string } }) {
   const locale: Locale = isLocale(params.locale) ? params.locale : 'ja'
-  return { title: t(locale).legal.tokushohoHeading }
+  const dict = t(locale)
+  const description = dict.seo.tokushohoDescription
+  return {
+    title: dict.legal.tokushohoHeading,
+    description,
+    alternates: localizedAlternates(locale, '/legal/tokushoho'),
+    openGraph: {
+      title: dict.legal.tokushohoHeading,
+      description,
+      url: absoluteUrl(`/${locale}/legal/tokushoho`),
+      type: 'website',
+    },
+  }
 }
 
 type Row = { label: string; value: string }

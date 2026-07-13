@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { isLocale, t, type Locale } from '@/lib/i18n'
 import { getFilteredProducts } from '@/lib/domain/store-products'
 import { getOrderAcceptanceStatus } from '@/lib/domain/store-status'
+import { absoluteUrl, localizedAlternates } from '@/lib/seo'
 import { WaitWeeksNotice } from '../_components/wait-weeks-notice'
 import { ProductFilters } from './_components/product-filters'
 import { ProductCard } from './_components/product-card'
@@ -15,9 +16,19 @@ function param(searchParams: SearchParams, key: string): string | undefined {
   return Array.isArray(value) ? value[0] : value
 }
 
+// フィルタ条件(searchParams)違いは正規URLをフィルタなしの一覧トップに統一する
+// (重複コンテンツ化を避けるため、canonicalは常に/productsを指す)。
 export function generateMetadata({ params }: { params: { locale: string } }) {
   const locale: Locale = isLocale(params.locale) ? params.locale : 'ja'
-  return { title: t(locale).productList.heading }
+  const dict = t(locale)
+  const description = dict.seo.productListDescription
+  return {
+    title: dict.productList.heading,
+    description,
+    alternates: localizedAlternates(locale, '/products'),
+    openGraph: { title: dict.productList.heading, description, url: absoluteUrl(`/${locale}/products`), type: 'website' },
+    twitter: { card: 'summary', title: dict.productList.heading, description },
+  }
 }
 
 export default async function ProductListPage({
