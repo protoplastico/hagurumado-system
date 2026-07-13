@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: '/admin/queue', label: '生産キュー' },
   { href: '/admin/batches', label: 'バッチ' },
   { href: '/admin/shipping', label: '発送' },
+  { href: '/admin/custom-orders', label: 'オーダーメイド' },
   { href: '/admin/customers', label: '顧客' },
   { href: '/admin/emails', label: 'メール' },
   { href: '/admin/products', label: '商品' },
