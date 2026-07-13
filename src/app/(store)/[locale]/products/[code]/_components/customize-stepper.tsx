@@ -8,6 +8,7 @@ import { buildOptionsSnapshot, getOptionDelta, type OptionsSnapshotEntry } from 
 import type { ProductDetail, ProductDetailOptionGroup } from '@/lib/domain/store-products'
 import { PEN_MAKER_LABELS } from '@/lib/domain/enums'
 import { useCart } from '@/lib/store/cart'
+import { trackEvent } from '@/lib/analytics/ga'
 
 type Props = {
   locale: Locale
@@ -95,6 +96,13 @@ export function CustomizeStepper({ locale, product, acceptingOrdersGlobal }: Pro
       addedPriceInternational,
     })
     setAddedToCart(true)
+
+    // TASK-29: 個人情報を含まない商品コード・数量・金額のみを送る。
+    trackEvent('add_to_cart', {
+      currency: 'JPY',
+      value: locale === 'ja' ? addedPriceDomestic : addedPriceInternational,
+      items: [{ item_id: product.code, quantity: 1 }],
+    })
   }
 
   return (

@@ -7,6 +7,7 @@ import { CartProvider } from '@/lib/store/cart'
 import { StoreHeader } from './_components/store-header'
 import { StoreFooter } from './_components/store-footer'
 import { SetHtmlLang } from './_components/set-html-lang'
+import { AnalyticsConsent } from './_components/analytics-consent'
 
 // TASK-26: 和風トーンの明朝系見出し。管理画面(/admin)には適用しない(店舗フロント限定)ため
 // ルートlayoutではなくここで読み込む。tailwind.config.tsのfontFamily.serifへ紐付け、
@@ -49,6 +50,7 @@ export default function StoreLayout({
         <StoreHeader locale={locale} />
         <main className="flex-1">{children}</main>
         <StoreFooter locale={locale} />
+        <AnalyticsConsent locale={locale} />
       </div>
     </CartProvider>
   )

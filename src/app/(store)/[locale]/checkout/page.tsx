@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { isLocale, t, type Locale } from '@/lib/i18n'
 import { formatPrice } from '@/lib/domain/pricing'
 import { CHECKOUT_COUNTRY_OPTIONS } from '@/lib/domain/checkout-countries'
 import { useCart } from '@/lib/store/cart'
+import { trackEvent } from '@/lib/analytics/ga'
 import { WaitWeeksNotice } from '../_components/wait-weeks-notice'
 import { getMyDefaultShippingInfo } from '../account/actions'
 import { recalculateCart, type CartRecalcResult } from '../cart/actions'
@@ -139,6 +140,19 @@ export default function CheckoutPage({
   })
 
   const total = subtotal + (shippingFee ?? 0)
+
+  const beginCheckoutTracked = useRef(false)
+  useEffect(() => {
+    if (!hydrated || loadingRecalc || items.length === 0 || hasBlockedItem) return
+    if (beginCheckoutTracked.current) return
+    beginCheckoutTracked.current = true
+    // TASK-29: 個人情報を含まない商品コード・数量・金額のみを送る。
+    trackEvent('begin_checkout', {
+      currency: 'JPY',
+      value: subtotal,
+      items: items.map((item) => ({ item_id: item.productCode, quantity: item.quantity })),
+    })
+  }, [hydrated, loadingRecalc, items, hasBlockedItem, subtotal])
 
   function setField<K extends keyof ShippingFormState>(key: K, value: ShippingFormState[K]) {
     setShipping((prev) => ({ ...prev, [key]: value }))

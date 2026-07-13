@@ -74,6 +74,7 @@ export default async function BlogPostDetail({ params }: { params: { locale: str
             width={1200}
             height={675}
             className="h-full w-full object-cover"
+            priority
           />
         </div>
       )}

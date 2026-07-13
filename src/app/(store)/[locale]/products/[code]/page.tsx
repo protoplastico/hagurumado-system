@@ -96,7 +96,7 @@ export default async function ProductDetailPage({ params }: { params: { locale: 
       />
 
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-        <ProductImage src={imageUrl} alt={name} />
+        <ProductImage src={imageUrl} alt={name} priority />
 
         <div>
           <h1 className="text-xl font-semibold text-sumi">{name}</h1>

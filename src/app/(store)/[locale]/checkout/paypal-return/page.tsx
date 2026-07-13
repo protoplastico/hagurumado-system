@@ -27,7 +27,7 @@ export default async function PayPalReturnPage({
   const supabase = createAdminClient()
   const { data: order, error } = await supabase
     .from('orders')
-    .select('id, order_number, payment_status')
+    .select('id, order_number, payment_status, total')
     .eq('payment_ref', token)
     .eq('payment_method', 'paypal')
     .maybeSingle()
@@ -37,7 +37,7 @@ export default async function PayPalReturnPage({
   }
 
   if (order.payment_status === 'paid') {
-    redirect(`/${locale}/checkout/complete?order_number=${encodeURIComponent(order.order_number)}`)
+    redirect(`/${locale}/checkout/complete?order_number=${encodeURIComponent(order.order_number)}&total=${order.total}`)
   }
 
   if (order.payment_status !== 'pending') {
@@ -55,7 +55,7 @@ export default async function PayPalReturnPage({
     return <ErrorView locale={locale} />
   }
 
-  redirect(`/${locale}/checkout/complete?order_number=${encodeURIComponent(order.order_number)}`)
+  redirect(`/${locale}/checkout/complete?order_number=${encodeURIComponent(order.order_number)}&total=${order.total}`)
 }
 
 function ErrorView({ locale }: { locale: Locale }) {

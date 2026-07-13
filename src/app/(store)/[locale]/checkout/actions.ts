@@ -54,7 +54,7 @@ export async function createCheckoutSession(input: CreateCheckoutSessionInput): 
       mode: 'payment',
       line_items: lineItems,
       customer_email: input.shipping.email,
-      success_url: `${input.origin}/${input.locale}/checkout/complete?order_number=${encodeURIComponent(pending.orderNumber)}`,
+      success_url: `${input.origin}/${input.locale}/checkout/complete?order_number=${encodeURIComponent(pending.orderNumber)}&total=${pending.total}`,
       cancel_url: `${input.origin}/${input.locale}/checkout?cancelled=1`,
       metadata: { order_id: pending.orderId, order_number: pending.orderNumber },
     })

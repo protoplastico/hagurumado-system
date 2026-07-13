@@ -228,6 +228,11 @@ const ja = {
     tokushohoDescription: '葉車堂細工所の特定商取引法に基づく表記です。',
     privacyDescription: '葉車堂細工所のプライバシーポリシーです。',
   },
+  cookieBanner: {
+    message: 'サイトの利用状況を分析するためにGoogle Analyticsを使用しています。よろしければ同意をお願いします。',
+    accept: '同意する',
+    decline: '同意しない',
+  },
 } as const
 
 export default ja

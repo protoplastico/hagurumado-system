@@ -233,6 +233,11 @@ const en = {
     tokushohoDescription: "Hagurumado Zaikusho's legal notice under the Specified Commercial Transactions Act.",
     privacyDescription: "Hagurumado Zaikusho's privacy policy.",
   },
+  cookieBanner: {
+    message: 'We use Google Analytics to understand how visitors use this site. Please let us know if you consent.',
+    accept: 'Accept',
+    decline: 'Decline',
+  },
 } as const
 
 export default en

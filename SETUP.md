@@ -66,6 +66,17 @@ NEXT_PUBLIC_SITE_URL=https://<デプロイ先のドメイン>
 ```
 ローカル開発時・未設定時は`http://localhost:3000`にフォールバックする。TASK-30でVercelのステージングURLが決まり次第、正しい値に更新すること。
 
+## 8. TASK-29の前に必要な作業(GA4)
+1. https://analytics.google.com でGA4プロパティを作成(ウェブストリームを追加)
+2. 発行された測定ID(`G-XXXXXXXXXX`形式)を控える
+3. `.env.local`に以下を設定:
+   ```
+   NEXT_PUBLIC_GA_MEASUREMENT_ID=<測定ID>
+   ```
+   未設定のままでもビルド・動作は問題ない(Cookie同意バナー自体が表示されず、GAは読み込まれない)。
+4. テスト購入の確認は、GA4管理画面 > 管理 > DebugView で行う(開発時は`?debug_mode=1`等は使わず、
+   Chrome拡張「Google Analytics Debugger」またはGA4の`debug_mode`パラメータ付き手動テストで確認すること)。
+
 ## 進行管理
 - 各TASK完了ごとにコミットが積まれる。動作確認して次へ
 - 設計変更が必要になった場合はこのチャット(Fable)に戻して判断
