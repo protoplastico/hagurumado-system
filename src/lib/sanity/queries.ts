@@ -26,6 +26,8 @@ const GUIDE_PAGE_QUERY = /* groq */ `
   _id,
   title,
   slug,
+  summary,
+  coverImage,
   body
 }`
 
@@ -37,10 +39,11 @@ const GUIDE_PAGES_QUERY = /* groq */ `
 *[_type == "guidePage"] | order(title.ja asc){
   _id,
   title,
-  slug
+  slug,
+  summary
 }`
 
-export async function getGuidePages(): Promise<Pick<GuidePage, '_id' | 'title' | 'slug'>[]> {
+export async function getGuidePages(): Promise<Pick<GuidePage, '_id' | 'title' | 'slug' | 'summary'>[]> {
   return sanityFetch(GUIDE_PAGES_QUERY, {}, {tags: ['guidePage']})
 }
 

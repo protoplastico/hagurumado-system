@@ -24,6 +24,8 @@ export type GuidePage = {
   _id: string
   title: LocaleString
   slug: {current: string}
+  summary?: LocaleText
+  coverImage?: SanityImageSource
   body?: LocaleBlockContent
 }
 

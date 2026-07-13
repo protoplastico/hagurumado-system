@@ -6,7 +6,8 @@ import type {Locale} from '@/lib/i18n'
 
 // TASK-25: 和風トーン(生成り×墨色、明朝見出し、余白を活かす)のPortable Textレンダラー。
 // フォント差し替え(Noto Serif JP等のWebフォント読み込み)はTASK-26のブランディング作業で行う。
-const components: PortableTextComponents = {
+// baseComponentsはTASK-27のブログ目次(見出しへのid付与)でmergeComponentsのベースとして再利用する。
+export const baseComponents: PortableTextComponents = {
   block: {
     normal: ({children}) => <p className="mb-4 text-sm leading-loose text-sumi/80">{children}</p>,
     h2: ({children}) => <h2 className="mb-4 mt-10 font-serif text-lg text-sumi first:mt-0">{children}</h2>,
@@ -65,7 +66,7 @@ export function SanityPortableText({
 
   return (
     <div className={className}>
-      <PortableText value={blocks} components={components} />
+      <PortableText value={blocks} components={baseComponents} />
     </div>
   )
 }

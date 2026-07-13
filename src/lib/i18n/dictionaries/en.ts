@@ -13,6 +13,7 @@ const en = {
   footer: {
     about: 'About',
     guide: 'Guide',
+    blog: 'Blog',
     tokushoho: 'Legal Notice',
     privacy: 'Privacy Policy',
     rights: 'Hagurumado Zaikusho',
@@ -154,12 +155,14 @@ const en = {
   guide: {
     heading: 'Guide',
     backToGuide: 'Back to Guide',
-    penIdentificationTitle: 'How to Identify Your Pen',
-    penIdentificationSummary: 'Find the right grip for your tablet pen or Apple Pencil.',
-    shippingTitle: 'About Shipping',
-    shippingSummary: 'Shipping fees and how our shipping batches work.',
-    faqTitle: 'Frequently Asked Questions',
-    faqSummary: 'Lead times, customization, and care instructions.',
+    empty: 'Guide pages are being prepared.',
+  },
+  blog: {
+    heading: 'Blog',
+    backToBlog: 'Back to Blog',
+    empty: 'Blog posts are being prepared.',
+    prevPage: 'Previous',
+    nextPage: 'Next',
   },
   legal: {
     tokushohoHeading: 'Legal Notice (Specified Commercial Transactions Act)',

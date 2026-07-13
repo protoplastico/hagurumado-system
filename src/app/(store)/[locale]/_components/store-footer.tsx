@@ -26,6 +26,9 @@ export async function StoreFooter({ locale }: { locale: Locale }) {
           <Link href={`/${locale}/guide`} className="hover:text-accent">
             {dict.footer.guide}
           </Link>
+          <Link href={`/${locale}/blog`} className="hover:text-accent">
+            {dict.footer.blog}
+          </Link>
           <Link href={`/${locale}/legal/tokushoho`} className="hover:text-accent">
             {dict.footer.tokushoho}
           </Link>

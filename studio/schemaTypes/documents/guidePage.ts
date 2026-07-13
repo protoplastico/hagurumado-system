@@ -21,6 +21,18 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'summary',
+      title: '一覧用の要約(1文)',
+      type: 'localeText',
+    }),
+    defineField({
+      name: 'coverImage',
+      title: 'カバー画像(OGP用)',
+      description: 'SNSシェア時のog:imageに使用します。未設定時はOGP画像なしになります。',
+      type: 'image',
+      options: {hotspot: true},
+    }),
+    defineField({
       name: 'body',
       title: '本文',
       type: 'localeBlockContent',

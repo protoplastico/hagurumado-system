@@ -13,6 +13,7 @@ const ja = {
   footer: {
     about: 'About',
     guide: 'ガイド',
+    blog: 'ブログ',
     tokushoho: '特定商取引法に基づく表記',
     privacy: 'プライバシーポリシー',
     rights: '葉車堂細工所',
@@ -153,12 +154,14 @@ const ja = {
   guide: {
     heading: 'ガイド',
     backToGuide: 'ガイド一覧に戻る',
-    penIdentificationTitle: 'お使いのペンの見分けかた',
-    penIdentificationSummary: 'お手持ちのペンタブレット・Apple Pencilに対応するグリップの選びかたをご案内します。',
-    shippingTitle: '発送について',
-    shippingSummary: '送料・発送バッチの運用について。',
-    faqTitle: 'よくあるご質問',
-    faqSummary: '納期・カスタマイズ・お手入れについて。',
+    empty: 'ただいまガイドページを準備中です。',
+  },
+  blog: {
+    heading: 'ブログ',
+    backToBlog: 'ブログ一覧に戻る',
+    empty: 'ただいまブログ記事を準備中です。',
+    prevPage: '前へ',
+    nextPage: '次へ',
   },
   legal: {
     tokushohoHeading: '特定商取引法に基づく表記',
