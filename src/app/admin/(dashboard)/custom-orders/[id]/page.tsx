@@ -1,10 +1,12 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getCustomOrderInquiry, getCustomOrderThreads } from '@/lib/domain/custom-order'
+import { getCustomOrderInquiry, getCustomOrderThreads, getGripShapeOptions } from '@/lib/domain/custom-order'
 import { getMediaSignedUrls } from '../actions'
 import { StatusControl } from './_components/status-control'
 import { MediaViewer } from './_components/media-viewer'
+import { DiagnosisPanel } from './_components/diagnosis-panel'
+import { OrderConversion } from './_components/order-conversion'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,6 +39,7 @@ export default async function CustomOrderDetailPage({ params }: { params: { id: 
 
   const allAttachments = threads.flatMap((th) => th.attachments)
   const signedUrls = await getMediaSignedUrls(allAttachments.map((a) => a.path))
+  const gripShapeOptions = await getGripShapeOptions(supabase)
 
   return (
     <div className="space-y-6">
@@ -96,6 +99,35 @@ export default async function CustomOrderDetailPage({ params }: { params: { id: 
           <MediaViewer attachments={allAttachments} signedUrls={signedUrls} />
         )}
       </section>
+
+      <section>
+        <h2 className="mb-3 text-sm font-semibold text-gray-900">診断・提案(AIドラフト→職人編集→送信)</h2>
+        <DiagnosisPanel inquiryId={inquiry.id} gripShapeOptions={gripShapeOptions} />
+      </section>
+
+      {threads.length > 0 && (
+        <section className="rounded-md border border-gray-200 bg-white p-4">
+          <h2 className="mb-3 text-sm font-semibold text-gray-900">往復履歴</h2>
+          <ul className="space-y-3">
+            {threads.map((th) => (
+              <li key={th.id} className="border-l-2 border-gray-200 pl-3 text-sm">
+                <p className="text-xs text-gray-400">
+                  {th.direction === 'inbound' ? '受信' : '送信'} ・ {new Date(th.created_at).toLocaleString('ja-JP')}
+                  {th.ai_draft && ' ・ AI生成(職人確認済)'}
+                </p>
+                <p className="whitespace-pre-wrap text-gray-800">{th.body}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {inquiry.status !== 'ordered' && inquiry.status !== 'closed' && (
+        <section>
+          <h2 className="mb-3 text-sm font-semibold text-gray-900">受注化</h2>
+          <OrderConversion inquiryId={inquiry.id} defaultName={inquiry.customer_name} defaultEmail={inquiry.customer_email} />
+        </section>
+      )}
     </div>
   )
 }

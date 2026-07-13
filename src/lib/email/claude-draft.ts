@@ -8,7 +8,9 @@ import type { EmailDraftInput, EmailDraft } from './types'
 // 移行が公式に推奨されていることを確認。ユーザー承認によりclaude-sonnet-5を維持する。
 const MODEL = 'claude-sonnet-5'
 
-const TONE_GUIDE = `葉車堂細工所は木製ペングリップを一本ずつ手作業で仕上げる工房です。
+// TASK-36: オーダーメイド診断ドラフト(src/lib/custom-order/diagnose.ts)からも
+// 「メール基盤と共通のトーンガイド」として再利用するためexportする。
+export const TONE_GUIDE = `葉車堂細工所は木製ペングリップを一本ずつ手作業で仕上げる工房です。
 メールの文体は以下を厳守してください:
 - 丁寧語(です・ます調)を基本とし、過度にへりくだりすぎない
 - 簡潔に。冗長な前置きや繰り返しを避ける

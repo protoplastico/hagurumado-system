@@ -284,6 +284,10 @@ const ja = {
     confirmEmailSubject: '【葉車堂細工所】オーダーメイドお申込みを受け付けました',
     confirmEmailBody:
       '{{name}} 様\n\nこのたびはオーダーメイドにお申込みいただき、誠にありがとうございます。\nいただいた内容を確認のうえ、職人より診断結果とご提案を折り返しメールにてお送りいたします(通常数日以内)。\n\n今しばらくお待ちくださいませ。\n\n葉車堂細工所',
+    proposalEmailSubject: '【葉車堂細工所】オーダーメイドのご提案',
+    paymentLinkEmailSubject: '【葉車堂細工所】オーダーメイドのお支払いについて',
+    paymentLinkEmailBody:
+      '{{name}} 様\n\nこのたびはオーダーメイドをご確定いただき、誠にありがとうございます。\n下記のリンクよりお支払いをお願いいたします。\n\n{{paymentUrl}}\n\nご注文番号: {{orderNumber}}\n\nお支払い確認後、製作を開始いたします。今しばらくお待ちくださいませ。\n\n葉車堂細工所',
   },
 } as const
 

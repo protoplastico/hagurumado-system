@@ -289,6 +289,10 @@ const en = {
     confirmEmailSubject: '[Hagurumado Zaikusho] We received your custom order application',
     confirmEmailBody:
       'Dear {{name}},\n\nThank you for applying for a full-custom grip. A craftsman will review your submission and reply with a diagnosis and proposal by email (usually within a few days).\n\nThank you for your patience.\n\nHagurumado Zaikusho',
+    proposalEmailSubject: '[Hagurumado Zaikusho] Your Custom Order Proposal',
+    paymentLinkEmailSubject: '[Hagurumado Zaikusho] Payment for Your Custom Order',
+    paymentLinkEmailBody:
+      'Dear {{name}},\n\nThank you for confirming your custom order. Please complete your payment using the link below.\n\n{{paymentUrl}}\n\nOrder Number: {{orderNumber}}\n\nOnce payment is confirmed, we will begin production. Thank you for your patience.\n\nHagurumado Zaikusho',
   },
 } as const
 
