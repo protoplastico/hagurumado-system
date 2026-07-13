@@ -3,8 +3,14 @@ import { createClient } from '@/lib/supabase/server'
 import { isLocale, t, type Locale } from '@/lib/i18n'
 import { getOrderAcceptanceStatus } from '@/lib/domain/store-status'
 import { getFeaturedActiveProducts } from '@/lib/domain/store-products'
+import { getProductionStepNames } from '@/lib/domain/store-craft-process'
 import { formatPrice, getPriceForLocale } from '@/lib/domain/pricing'
+import { getSiteSettings } from '@/lib/sanity/queries'
 import { OrderStatusBanner } from './_components/order-status-banner'
+import { HeroSection } from './_components/hero-section'
+import { ConceptSection } from './_components/concept-section'
+import { CraftProcessSection } from './_components/craft-process-section'
+import { SeriesSection } from './_components/series-section'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,30 +28,45 @@ export default async function StoreHomePage({ params }: { params: { locale: stri
   const dict = t(locale)
   const supabase = createClient()
 
-  const [status, products] = await Promise.all([
+  const [status, products, productionSteps, siteSettings] = await Promise.all([
     getOrderAcceptanceStatus(supabase),
     getFeaturedActiveProducts(supabase),
+    getProductionStepNames(supabase),
+    // TASK-26: SanityはブランディングコンテンツのCMSであり本編(受注・商品情報)には無関係のため、
+    // 取得失敗・未設定時は例外を握りつぶしてダミー値表示にフォールバックする。
+    getSiteSettings().catch(() => null),
   ])
 
   return (
     <div>
       <OrderStatusBanner locale={locale} status={status} />
 
-      <section className="mx-auto max-w-3xl px-4 py-16 text-center">
-        <h1 className="text-2xl font-semibold leading-relaxed text-sumi sm:text-3xl">
-          {dict.home.brandStatement}
-        </h1>
-        <p className="mt-4 text-sm leading-relaxed text-sumi/70">{dict.home.brandSubtext}</p>
-        <Link
-          href={`/${locale}/products`}
-          className="mt-8 inline-block rounded-sm border border-sumi/30 px-6 py-3 text-sm text-sumi transition-colors hover:border-accent hover:text-accent"
-        >
-          {dict.home.ctaShop}
-        </Link>
-      </section>
+      <HeroSection
+        locale={locale}
+        siteSettings={siteSettings}
+        fallbackTitle={dict.home.brandStatement}
+        fallbackSubtitle={dict.home.brandSubtext}
+        ctaLabel={dict.home.ctaShop}
+        ctaHref={`/${locale}/products`}
+      />
 
-      <section className="mx-auto max-w-5xl px-4 pb-16">
-        <h2 className="mb-6 text-center text-lg font-semibold text-sumi">{dict.home.featuredHeading}</h2>
+      <ConceptSection
+        locale={locale}
+        heading={locale === 'ja' ? siteSettings?.conceptHeading?.ja : siteSettings?.conceptHeading?.en}
+        items={siteSettings?.conceptItems}
+      />
+
+      <CraftProcessSection locale={locale} steps={productionSteps} craftProcessSteps={siteSettings?.craftProcessSteps ?? []} />
+
+      <SeriesSection
+        locale={locale}
+        heading={locale === 'ja' ? siteSettings?.seriesHeading?.ja : siteSettings?.seriesHeading?.en}
+        ctaLabel={locale === 'ja' ? siteSettings?.seriesCtaLabel?.ja : siteSettings?.seriesCtaLabel?.en}
+        items={siteSettings?.seriesItems}
+      />
+
+      <section className="mx-auto max-w-5xl px-4 py-16">
+        <h2 className="mb-6 text-center font-serif text-xl text-sumi">{dict.home.featuredHeading}</h2>
         {products.length === 0 ? (
           <p className="text-center text-sm text-sumi/60">{dict.home.noProducts}</p>
         ) : (

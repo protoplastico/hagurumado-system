@@ -90,6 +90,13 @@ const SITE_SETTINGS_QUERY = /* groq */ `*[_type == "siteSettings"][0]{
   _id,
   heroTitle,
   heroSubtitle,
+  heroImage,
+  conceptHeading,
+  conceptItems,
+  craftProcessSteps | order(stepNo asc),
+  seriesHeading,
+  seriesCtaLabel,
+  seriesItems,
   aboutBody,
   snsLinks
 }`

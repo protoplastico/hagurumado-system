@@ -25,10 +25,11 @@ export async function sanityFetch<T>(
   params: QueryParams = {},
   {revalidate = 60, tags = []}: SanityFetchOptions = {}
 ): Promise<T> {
-  return client.fetch<T>(query, params, {
-    cache: revalidate === false ? 'no-store' : 'force-cache',
-    next: revalidate === false ? undefined : {revalidate, tags},
-  })
+  return client.fetch<T>(
+    query,
+    params,
+    revalidate === false ? {cache: 'no-store'} : {next: {revalidate, tags}}
+  )
 }
 
 export default client

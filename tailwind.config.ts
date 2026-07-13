@@ -26,6 +26,11 @@ const config: Config = {
           DEFAULT: "#8a6d4c",
         },
       },
+      fontFamily: {
+        // TASK-26: 店舗フロント限定でNoto Serif JPを読み込む((store)/[locale]/layout.tsx)。
+        // 管理画面はこの変数が定義されないため、自動的にTailwind既定のserifスタックへフォールバックする。
+        serif: ["var(--font-serif-jp)", "ui-serif", "Georgia", "serif"],
+      },
     },
   },
   plugins: [],

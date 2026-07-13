@@ -11,18 +11,36 @@ const en = {
     switchLanguage: '日本語',
   },
   footer: {
+    about: 'About',
     guide: 'Guide',
     tokushoho: 'Legal Notice',
     privacy: 'Privacy Policy',
     rights: 'Hagurumado Zaikusho',
   },
   home: {
-    brandStatement: 'Handcrafted pen grips shaped by traditional Japanese aesthetics and natural wood.',
+    // TASK-26 confirmed copy. Also used as the fallback when Sanity siteSettings.heroTitle/heroSubtitle is unset.
+    brandStatement: 'Toward simpler, more natural forms.',
     brandSubtext:
       'Each grip is carved by hand from a single piece of wood, celebrating the natural character of the material.',
     ctaShop: 'Browse the shop',
     featuredHeading: 'Our Lineup',
     noProducts: 'No products are published yet.',
+    conceptHeading: 'Our Approach',
+    concept1Title: 'Redesigning Japanese Aesthetics',
+    concept1Body: 'We reinterpret traditional Japanese design into forms that work as everyday tools today.',
+    concept2Title: 'Natural Materials Over Mass Production',
+    concept2Body: 'Instead of mass-produced materials, we use natural wood — each piece with its own character.',
+    concept3Title: 'Tools Made to Last',
+    concept3Body: 'Timeless in style, and made to feel better in hand the more you use them.',
+    craftProcessHeading: 'How It’s Made',
+    craftProcessSubtext: 'Every step is carried out carefully, by hand.',
+    seriesHeading: 'Our Series',
+    seriesBlurbLite: 'An accessible entry-level series.',
+    seriesBlurbErgo: 'Ergonomic shapes designed for a comfortable grip.',
+    seriesBlurbWazai: 'Traditional Japanese design using domestic wood species.',
+    seriesBlurbPro: 'Crafted from fine woods from around the world.',
+    seriesBlurbPremium: 'Our top-tier series, using rare wood species.',
+    seriesCta: 'View',
   },
   status: {
     acceptingTrue: 'We are currently accepting orders',
@@ -182,6 +200,17 @@ const en = {
     trackingNumberLabel: 'Tracking Number',
     trackingLinkCta: 'Track Your Shipment',
     loginRequiredNotice: 'Please log in to view your account.',
+  },
+  about: {
+    heading: 'About',
+    workshopHeading: 'The Workshop',
+    workshopPlaceholder:
+      '{{PLACEHOLDER: Please add the workshop introduction via the Site Settings (About body) in Sanity Studio. This notice is shown until then.}}',
+    craftsmanHeading: 'The Craftsman',
+    craftsmanPlaceholder: '{{PLACEHOLDER: Please add the craftsman introduction via the Site Settings (About body) in Sanity Studio.}}',
+    locationHeading: 'Location',
+    locationCity: 'Yokosuka, Kanagawa, Japan',
+    locationPlaceholder: '{{PLACEHOLDER: Please add the full address / map once confirmed, via the Site Settings in Sanity Studio.}}',
   },
 } as const
 

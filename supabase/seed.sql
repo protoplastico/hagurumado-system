@@ -1,15 +1,16 @@
 -- 工程マスタ(db_design.md §2.4 / 要件定義書 §2.2、10ステップ確定)
-insert into production_steps (step_no, name_ja, scope, is_custom_extra) values
-  (1, '木取り', 'batch', false),
-  (2, '穴あけ', 'batch', false),
-  (3, '旋盤加工', 'batch', false),
-  (4, '整形', 'batch', false),
-  (5, '研磨', 'batch', false),
-  (6, '塗装', 'batch', false),
-  (7, '検品', 'batch', false),
-  (8, '箱詰め', 'shipping', false),
-  (9, 'ラベリング', 'shipping', false),
-  (10, '発送', 'shipping', false);
+-- name_en: TASK-26 S-01製作工程紹介向け(20260712000024で既存環境にも同じ値をUPDATE済み)
+insert into production_steps (step_no, name_ja, name_en, scope, is_custom_extra) values
+  (1, '木取り', 'Wood Selection & Cutting', 'batch', false),
+  (2, '穴あけ', 'Drilling', 'batch', false),
+  (3, '旋盤加工', 'Lathe Turning', 'batch', false),
+  (4, '整形', 'Shaping', 'batch', false),
+  (5, '研磨', 'Sanding', 'batch', false),
+  (6, '塗装', 'Finishing', 'batch', false),
+  (7, '検品', 'Inspection', 'batch', false),
+  (8, '箱詰め', 'Packing', 'shipping', false),
+  (9, 'ラベリング', 'Labeling', 'shipping', false),
+  (10, '発送', 'Shipping', 'shipping', false);
 
 -- 設定初期値(db_design.md §2.7)
 -- wait_estimate_safety_margin はdb_design.mdに明記の無い追加項目。
