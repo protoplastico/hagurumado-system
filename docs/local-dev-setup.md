@@ -2,25 +2,90 @@
 
 この手順は「実際にブラウザで管理画面を操作し、BASE注文CSVを取り込んで動作確認する」ための
 セットアップ方法です。管理画面(`/admin`)はSupabase Authでの認証が必須のため、本物の
-Supabase環境(ローカルの`supabase start`、または実際のSupabaseプロジェクト)が必要です。
+Supabase環境が必要です。**「localhost」はお手元のPCのlocalhostを指します。** Claude Codeの
+このセッションはネットワーク分離された別のクラウドコンテナで動いており、Docker Hubだけでなく
+Supabase自体のAPI(`*.supabase.co`)への接続もネットワークポリシーでブロックされているため、
+このセッション内でサーバーを起動してお使いのブラウザからアクセスしていただく方法(ポート転送・
+プレビューURLの発行等)は存在しません。お手元のPCで`npm run dev`を実行していただく必要があります。
+以下の2つの方法のどちらかをお選びください。
 
-> **本パッケージ(Claude Codeのサンドボックス)内では実行できません。**
-> このサンドボックス環境はDocker Hubのイメージ取得(CDN経由のblob転送)がネットワークポリシーで
-> ブロックされているため、`supabase start`でのローカルSupabaseスタック起動ができません。
-> お手元のPC(通常のインターネット接続がある環境)であれば、Docker Desktopが動いていれば
-> 以下の手順でそのまま動きます。
->
+- **方法A(推奨・Docker不要)**:無料のSupabaseクラウドプロジェクトを使う。数分で作成でき、
+  Dockerのインストール・起動が一切不要
+- **方法B**:Docker DesktopでSupabaseをローカルに丸ごと起動する(完全オフラインで動く)
+
+どちらの方法でも、CSV取込の動作確認手順(5節)は共通です。
+
 > CSV取込ロジック自体(`parseBaseOrders`のパース・振り分け判定・重複スキップ)は、本パッケージ内で
 > ローカルPostgresに対して直接検証済みです。検証内容は`supabase/verification/sample_data/`と
 > 本ファイル末尾の「サンドボックス内で実施したロジック検証の結果」を参照してください。
 
-## 前提条件
+## 方法A:Supabaseクラウド(Docker不要・最短ルート)
+
+### A-1. 前提条件
+- Node.js 20以上、npm
+- Supabaseアカウント(無料。[supabase.com](https://supabase.com)でメール登録のみ)
+
+### A-2. プロジェクト作成
+1. [supabase.com](https://supabase.com)でログイン→「New project」→組織・プロジェクト名・
+   データベースパスワード・リージョン(Tokyo推奨)を入力して作成(1〜2分で起動)
+2. プロジェクトの Settings → API から以下をメモ:
+   - Project URL(例:`https://xxxxxxxx.supabase.co`)
+   - `anon` `public` key
+   - `service_role` `secret` key
+
+### A-3. マイグレーション適用(Dockerなしで実行可能)
+```bash
+cd hagurumado-system
+npm install
+npm install --save-dev supabase
+
+npx supabase link --project-ref <プロジェクトのref(URLのxxxxxxxx部分)>
+# データベースパスワードの入力を求められます(A-2で設定したもの)
+
+npx supabase db push --include-all
+```
+これで`supabase/migrations/`配下の全マイグレーションがクラウド側のDBに適用されます。
+
+### A-4. シードデータ投入
+Supabaseダッシュボードの「SQL Editor」を開き、以下のファイルの中身を順に貼り付けて実行:
+1. `supabase/seed.sql`
+2. `supabase/seed_products.sql`
+3. (任意)`supabase/seed_variations_full.sql`(全35商品523バリエーションの完全版)
+
+### A-5. .env.local作成
+```bash
+cp .env.local.example .env.local
+```
+`.env.local`に、A-2でメモした3項目を設定(他は空欄のままでCSV取込確認は可能):
+```
+NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key>
+SUPABASE_SERVICE_ROLE_KEY=<service_role key>
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+### A-6. 管理者アカウント作成
+Supabaseダッシュボード → Authentication → 「Add user」でユーザー作成後、
+SQL Editorで以下を実行してrole付与(手順3節と共通):
+```sql
+update auth.users
+set raw_app_meta_data = raw_app_meta_data || '{"role":"admin"}'::jsonb
+where email = '作成したメールアドレス';
+```
+
+これで準備完了です。**4節(アプリの起動)に進んでください。**
+
+---
+
+## 方法B:Docker Desktop + ローカルSupabase(完全オフライン)
+
+### 前提条件
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)(起動しておくこと)
 - Node.js 20以上
 - npm
 
-## 1. セットアップ
+### B-1. セットアップ
 
 ```bash
 cd hagurumado-system
@@ -57,7 +122,7 @@ npx supabase db execute -f supabase/seed_products.sql
 npx supabase db execute -f supabase/seed_variations_full.sql
 ```
 
-## 2. .env.localの作成
+### B-2. .env.localの作成
 
 ```bash
 cp .env.local.example .env.local
@@ -74,7 +139,7 @@ SUPABASE_SERVICE_ROLE_KEY=<supabase startが出力したservice_role key>
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-## 3. 管理者アカウントの作成
+### B-3. 管理者アカウントの作成
 
 Supabase Authにユーザーを作成し、`app_metadata.role = 'admin'`を付与します
 (通常のサインアップだけではこの権限は付かない設計のため、この一手間が必要です)。
@@ -89,16 +154,16 @@ set raw_app_meta_data = raw_app_meta_data || '{"role":"admin"}'::jsonb
 where email = 'admin@hagurumado.local';
 ```
 
-## 4. アプリの起動
+## 4. アプリの起動(方法A・B共通)
 
 ```bash
 npm run dev
 ```
 
-`http://localhost:3000/admin/login` を開き、手順3で作成したメールアドレス・パスワードでログイン。
-ダッシュボード(受注数・生産キュー等)が表示されれば疎通成功です。
+`http://localhost:3000/admin/login` を開き、A-6またはB-3で作成したメールアドレス・パスワードで
+ログイン。ダッシュボード(受注数・生産キュー等)が表示されれば疎通成功です。
 
-## 5. BASE CSV取込の動作確認
+## 5. BASE CSV取込の動作確認(方法A・B共通)
 
 1. 左ナビ「BASEインポート」(`/admin/base-import`)を開く
 2. まずは本パッケージ同梱の**サンプルCSV**でドライラン:
@@ -120,7 +185,7 @@ npm run dev
 3. 実際のBASEエクスポートCSVで本番投入前リハーサルを行う場合は
    `docs/production_migration_guide.md`・`supabase/verification/base_import_reconciliation.sql`を参照
 
-## 6. 後片付け
+## 6. 後片付け(方法Bのみ。方法Aはクラウド側なので不要)
 
 ```bash
 npx supabase stop
